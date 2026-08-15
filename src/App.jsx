@@ -31,6 +31,7 @@ export default function LocalSEOKit() {
 
   const [weeklyActions, setWeeklyActions] = useState(null);
   const [mapCoords, setMapCoords] = useState(null);
+  const [storefrontPhoto, setStorefrontPhoto] = useState(null);
   const [mapLoading, setMapLoading] = useState(false);
   const [mapError, setMapError] = useState(false);
   const mapContainerRef = useRef(null);
@@ -89,6 +90,7 @@ export default function LocalSEOKit() {
       competitorAngleHeading: 'YOUR ANGLE',
       weeklyActionsTitle: "THIS WEEK'S 3 ACTIONS",
       locateOnMap: 'Show on map', locatingMap: 'Finding location...', locateMapError: 'Could not find that location. Try a more specific city.', resetMap: 'Reset',
+      uploadStorefrontPhoto: 'Add a storefront photo', changeStorefrontPhoto: 'Change storefront photo',
       weeklyActionsSubtitle: 'A quick-glance plan — not just data, an actual next step.',
       generateWeeklyActions: 'Get my 3 actions', generatingWeeklyActions: 'Prioritizing...',
       calendarIntro: 'Generate 12 post ideas mapped across the month — a ready content plan instead of one post at a time.',
@@ -150,6 +152,7 @@ export default function LocalSEOKit() {
       competitorAngleHeading: 'ВАШ УГОЛ ПОДАЧИ',
       weeklyActionsTitle: 'ТРИ ДЕЙСТВИЯ НА ЭТУ НЕДЕЛЮ',
       locateOnMap: 'Показать на карте', locatingMap: 'Ищу местоположение...', locateMapError: 'Не удалось найти это место. Уточните город.', resetMap: 'Сбросить',
+      uploadStorefrontPhoto: 'Добавить фото витрины', changeStorefrontPhoto: 'Сменить фото витрины',
       weeklyActionsSubtitle: 'План на один взгляд — не просто данные, а конкретный следующий шаг.',
       generateWeeklyActions: 'Получить мои 3 действия', generatingWeeklyActions: 'Расставляю приоритеты...',
       calendarIntro: 'Генерирует 12 идей постов на месяц вперёд — готовый план контента вместо одного поста за раз.',
@@ -445,6 +448,14 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     setCheckedActions(prev => ({ ...prev, [i]: !prev[i] }));
   }
 
+  function handleStorefrontUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setStorefrontPhoto(reader.result);
+    reader.readAsDataURL(file);
+  }
+
   // Динамически подгружаем Leaflet (карта на OpenStreetMap) с CDN —
   // без npm-пакетов, без API-ключа. Тёмные плитки CartoDB тоже бесплатны.
   function loadLeaflet() {
@@ -516,7 +527,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     const map = L.map(mapContainerRef.current, {
       zoomControl: false,
       attributionControl: true,
-    }).setView([mapCoords.lat, mapCoords.lng], 14);
+    }).setView([mapCoords.lat, mapCoords.lng], 18);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
@@ -1065,6 +1076,22 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
                 >
                   {t.resetMap}
                 </button>
+
+                <label
+                  className="flex items-center gap-3 mt-2 rounded-lg px-3 py-2 text-sm cursor-pointer"
+                  style={{ background: BG, border: `1px dashed ${LINE}`, color: INK_SOFT }}
+                >
+                  {storefrontPhoto ? (
+                    <img src={storefrontPhoto} alt="" style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }} />
+                  ) : (
+                    <span style={{ width: 32, height: 32, borderRadius: 6, background: 'rgba(242,169,59,0.15)', flexShrink: 0 }} />
+                  )}
+                  <span>{storefrontPhoto ? t.changeStorefrontPhoto : t.uploadStorefrontPhoto}</span>
+                  <input type="file" accept="image/*" onChange={handleStorefrontUpload} className="hidden" />
+                </label>
+                {storefrontPhoto && (
+                  <img src={storefrontPhoto} alt="Storefront" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 10, marginTop: 8, border: `1px solid rgba(233,79,130,0.3)` }} />
+                )}
               </div>
             )}
           </div>
