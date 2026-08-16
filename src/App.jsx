@@ -527,11 +527,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     const map = L.map(mapContainerRef.current, {
       zoomControl: false,
       attributionControl: true,
-    }).setView([mapCoords.lat, mapCoords.lng], 18);
+    }).setView([mapCoords.lat, mapCoords.lng], 16);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 19,
+      maxZoom: 20,
     }).addTo(map);
 
     // Кастомная метка в фирменных цветах (янтарь + розовое кольцо), как точки-сигналы радара
