@@ -32,6 +32,87 @@ export default function LocalSEOKit() {
   const [weeklyActions, setWeeklyActions] = useState(null);
   const [mapCoords, setMapCoords] = useState(null);
   const [storefrontPhoto, setStorefrontPhoto] = useState(null);
+
+  const [citySuggestions, setCitySuggestions] = useState([]);
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false);
+  const cityDebounceRef = useRef(null);
+
+  const [categorySuggestions, setCategorySuggestions] = useState([]);
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
+
+  const [brandVoiceSuggestions, setBrandVoiceSuggestions] = useState([]);
+  const [showBrandVoiceSuggestions, setShowBrandVoiceSuggestions] = useState(false);
+
+  const CATEGORY_OPTIONS = [
+    'Coffee shop', 'Restaurant', 'Cafe', 'Bakery', 'Bar', 'Pizza restaurant',
+    'Hair salon', 'Barbershop', 'Nail salon', 'Spa', 'Massage therapist',
+    'Gym', 'Yoga studio', 'Dentist', 'Doctor', 'Pharmacy', 'Veterinarian',
+    'Auto repair shop', 'Car wash', 'Florist', 'Pet store', 'Bookstore',
+    'Clothing store', 'Jewelry store', 'Furniture store', 'Hardware store',
+    'Law firm', 'Accounting firm', 'Real estate agency', 'Insurance agency',
+    'Photography studio', 'Tattoo shop', 'Dry cleaner', 'Locksmith',
+  ];
+
+  const BRAND_VOICE_OPTIONS = [
+    'Friendly, playful', 'Professional, polished', 'Warm, welcoming',
+    'Bold, energetic', 'Elegant, sophisticated', 'Down-to-earth, casual',
+    'Witty, fun', 'Calm, reassuring', 'Luxurious, exclusive', 'Minimalist, direct',
+  ];
+
+  function handleCityChange(value) {
+    setCity(value);
+    if (cityDebounceRef.current) clearTimeout(cityDebounceRef.current);
+    if (!value.trim() || value.trim().length < 3) {
+      setCitySuggestions([]);
+      setShowCitySuggestions(false);
+      return;
+    }
+    cityDebounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&q=${encodeURIComponent(value)}`
+        );
+        const data = await res.json();
+        setCitySuggestions(data || []);
+        setShowCitySuggestions(true);
+      } catch (err) {
+        setCitySuggestions([]);
+      }
+    }, 400);
+  }
+
+  function pickCitySuggestion(item) {
+    const addr = item.address || {};
+    const cityName = addr.city || addr.town || addr.village || addr.municipality || item.display_name.split(',')[0];
+    const region = addr.state || addr.country || '';
+    setCity(region ? `${cityName}, ${region}` : cityName);
+    setShowCitySuggestions(false);
+    setCitySuggestions([]);
+  }
+
+  function handleCategoryChange(value) {
+    setCategory(value);
+    if (!value.trim()) {
+      setCategorySuggestions([]);
+      setShowCategorySuggestions(false);
+      return;
+    }
+    const filtered = CATEGORY_OPTIONS.filter(c => c.toLowerCase().includes(value.toLowerCase()));
+    setCategorySuggestions(filtered.slice(0, 6));
+    setShowCategorySuggestions(filtered.length > 0);
+  }
+
+  function handleBrandVoiceChange(value) {
+    setBrandVoice(value);
+    if (!value.trim()) {
+      setBrandVoiceSuggestions([]);
+      setShowBrandVoiceSuggestions(false);
+      return;
+    }
+    const filtered = BRAND_VOICE_OPTIONS.filter(v => v.toLowerCase().includes(value.toLowerCase()));
+    setBrandVoiceSuggestions(filtered.slice(0, 6));
+    setShowBrandVoiceSuggestions(filtered.length > 0);
+  }
   const [mapLoading, setMapLoading] = useState(false);
   const [mapError, setMapError] = useState(false);
   const mapContainerRef = useRef(null);
@@ -529,6 +610,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
       attributionControl: true,
     }).setView([mapCoords.lat, mapCoords.lng], 16);
 
+    // Убираем стандартный префикс Leaflet (включая флаг Украины) —
+    // оставляем только нужную атрибуцию OpenStreetMap/CARTO
+    map.attributionControl.setPrefix('');
+
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 20,
@@ -993,50 +1078,110 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
                 onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; }}
               />
             </div>
-            <div>
+            <div style={{ position: 'relative' }}>
               <label className="flex items-center gap-1.5 text-xs font-medium mb-1" style={{ color: INK_SOFT, fontFamily: bodyFont, letterSpacing: '0.02em', fontWeight: 600 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: 5, background: "rgba(242,169,59,0.15)" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={AMBER_DEEP} strokeWidth="2"><path d="M20.5 12.5L12 21l-9-9 8.5-8.5H20a1 1 0 0 1 1 1v8z" strokeLinejoin="round"/><circle cx="15" cy="8" r="1.4" fill={AMBER_DEEP} stroke="none"/></svg></span>
                 {t.categoryLabel}
               </label>
               <input
-                type="text" value={category} onChange={(e) => setCategory(e.target.value)}
+                type="text" value={category} onChange={(e) => handleCategoryChange(e.target.value)}
+                onFocus={(e) => { e.target.style.borderColor = AMBER; e.target.style.boxShadow = '0 0 0 3px rgba(242,169,59,0.15)'; if (categorySuggestions.length) setShowCategorySuggestions(true); }}
+                onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; setTimeout(() => setShowCategorySuggestions(false), 150); }}
                 placeholder={t.categoryPh}
                 className="w-full rounded px-3 py-2 text-sm focus:outline-none"
                 style={{ width: "100%", boxSizing: "border-box", background: BG, border: `1px solid rgba(242,169,59,0.35)`, color: TEXT_LIGHT, transition: 'box-shadow 0.15s, border-color 0.15s' }}
-                onFocus={(e) => { e.target.style.borderColor = AMBER; e.target.style.boxShadow = '0 0 0 3px rgba(242,169,59,0.15)'; }}
-                onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; }}
               />
+              {showCategorySuggestions && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, zIndex: 50,
+                  background: CARD, border: `1px solid ${LINE}`, borderRadius: 8, overflow: 'hidden',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                }}>
+                  {categorySuggestions.map((c, i) => (
+                    <div
+                      key={i}
+                      onMouseDown={() => { setCategory(c); setShowCategorySuggestions(false); }}
+                      className="text-sm cursor-pointer"
+                      style={{ padding: '8px 12px', color: TEXT_LIGHT, borderBottom: i < categorySuggestions.length - 1 ? `1px solid ${LINE}` : 'none' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(242,169,59,0.12)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {c}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16, width: '100%' }}>
-            <div>
+            <div style={{ position: 'relative' }}>
               <label className="flex items-center gap-1.5 text-xs font-medium mb-1" style={{ color: INK_SOFT, fontFamily: bodyFont, letterSpacing: '0.02em', fontWeight: 600 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: 5, background: "rgba(242,169,59,0.15)" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={AMBER_DEEP} strokeWidth="2"><circle cx="12" cy="10" r="2.6"/><path d="M12 21c3.6-3.9 6-7.3 6-10.6A6 6 0 0 0 6 10.4C6 13.7 8.4 17.1 12 21z" strokeLinejoin="round"/></svg></span>
                 {t.cityLabel}
               </label>
               <input
-                type="text" value={city} onChange={(e) => setCity(e.target.value)}
+                type="text" value={city} onChange={(e) => handleCityChange(e.target.value)}
+                onFocus={(e) => { e.target.style.borderColor = AMBER; e.target.style.boxShadow = '0 0 0 3px rgba(242,169,59,0.15)'; if (citySuggestions.length) setShowCitySuggestions(true); }}
+                onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; setTimeout(() => setShowCitySuggestions(false), 150); }}
                 placeholder={t.cityPh}
                 className="w-full rounded px-3 py-2 text-sm focus:outline-none"
                 style={{ width: "100%", boxSizing: "border-box", background: BG, border: `1px solid rgba(242,169,59,0.35)`, color: TEXT_LIGHT, transition: 'box-shadow 0.15s, border-color 0.15s' }}
-                onFocus={(e) => { e.target.style.borderColor = AMBER; e.target.style.boxShadow = '0 0 0 3px rgba(242,169,59,0.15)'; }}
-                onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; }}
               />
+              {showCitySuggestions && citySuggestions.length > 0 && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, zIndex: 50,
+                  background: CARD, border: `1px solid ${LINE}`, borderRadius: 8, overflow: 'hidden',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                }}>
+                  {citySuggestions.map((item, i) => (
+                    <div
+                      key={i}
+                      onMouseDown={() => pickCitySuggestion(item)}
+                      className="text-sm cursor-pointer"
+                      style={{ padding: '8px 12px', color: TEXT_LIGHT, borderBottom: i < citySuggestions.length - 1 ? `1px solid ${LINE}` : 'none' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(242,169,59,0.12)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {item.display_name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div>
+            <div style={{ position: 'relative' }}>
               <label className="flex items-center gap-1.5 text-xs font-medium mb-1" style={{ color: INK_SOFT, fontFamily: bodyFont, letterSpacing: '0.02em', fontWeight: 600 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: 5, background: "rgba(242,169,59,0.15)" }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={AMBER_DEEP} strokeWidth="2"><path d="M4 14V10M8 17V7M12 19V5M16 15V9M20 13V11" strokeLinecap="round"/></svg></span>
                 {t.brandVoiceLabel}
               </label>
               <input
-                type="text" value={brandVoice} onChange={(e) => setBrandVoice(e.target.value)}
+                type="text" value={brandVoice} onChange={(e) => handleBrandVoiceChange(e.target.value)}
+                onFocus={(e) => { e.target.style.borderColor = AMBER; e.target.style.boxShadow = '0 0 0 3px rgba(242,169,59,0.15)'; if (brandVoiceSuggestions.length) setShowBrandVoiceSuggestions(true); }}
+                onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; setTimeout(() => setShowBrandVoiceSuggestions(false), 150); }}
                 placeholder={t.brandVoicePh}
                 className="w-full rounded px-3 py-2 text-sm focus:outline-none"
                 style={{ width: "100%", boxSizing: "border-box", background: BG, border: `1px solid rgba(242,169,59,0.35)`, color: TEXT_LIGHT, transition: 'box-shadow 0.15s, border-color 0.15s' }}
-                onFocus={(e) => { e.target.style.borderColor = AMBER; e.target.style.boxShadow = '0 0 0 3px rgba(242,169,59,0.15)'; }}
-                onBlur={(e) => { e.target.style.borderColor = LINE; e.target.style.boxShadow = 'none'; }}
               />
+              {showBrandVoiceSuggestions && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, zIndex: 50,
+                  background: CARD, border: `1px solid ${LINE}`, borderRadius: 8, overflow: 'hidden',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                }}>
+                  {brandVoiceSuggestions.map((v, i) => (
+                    <div
+                      key={i}
+                      onMouseDown={() => { setBrandVoice(v); setShowBrandVoiceSuggestions(false); }}
+                      className="text-sm cursor-pointer"
+                      style={{ padding: '8px 12px', color: TEXT_LIGHT, borderBottom: i < brandVoiceSuggestions.length - 1 ? `1px solid ${LINE}` : 'none' }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(242,169,59,0.12)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {v}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
