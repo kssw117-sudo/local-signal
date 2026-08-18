@@ -83,9 +83,11 @@ export default function LocalSEOKit() {
 
   function pickCitySuggestion(item) {
     const addr = item.address || {};
-    const cityName = addr.city || addr.town || addr.village || addr.municipality || item.display_name.split(',')[0];
+    const street = [addr.house_number, addr.road].filter(Boolean).join(' ');
+    const cityName = addr.city || addr.town || addr.village || addr.municipality || '';
     const region = addr.state || addr.country || '';
-    setCity(region ? `${cityName}, ${region}` : cityName);
+    const parts = [street, cityName, region].filter(Boolean);
+    setCity(parts.length ? parts.join(', ') : item.display_name);
     setShowCitySuggestions(false);
     setCitySuggestions([]);
   }
@@ -160,7 +162,7 @@ export default function LocalSEOKit() {
       subtitle: 'Get found. GBP posts, Q&A answers, and SEO descriptions — generated on the spot.',
       businessLabel: 'Business name', businessPh: 'e.g. Morning Coffee Shop',
       categoryLabel: 'Category', categoryPh: 'e.g. Coffee shop',
-      cityLabel: 'City / area', cityPh: 'e.g. Austin, TX',
+      cityLabel: 'City / area', cityPh: 'e.g. Austin, TX or 123 Main St, Austin',
       brandVoiceLabel: 'Brand voice — optional', brandVoicePh: 'e.g. friendly, playful',
       languageLabel: 'Language',
       tabPost: 'GBP POST', tabQA: 'Q&A REPLY', tabSeo: 'SEO COPY', tabCalendar: 'CALENDAR', tabCompetitor: 'STAND OUT',
@@ -222,7 +224,7 @@ export default function LocalSEOKit() {
       subtitle: 'Станьте заметны. Посты для Google Business, ответы клиентам и SEO-описания — на месте.',
       businessLabel: 'Название бизнеса', businessPh: 'Например: кофейня «Утро»',
       categoryLabel: 'Категория', categoryPh: 'Например: кофейня',
-      cityLabel: 'Город / район', cityPh: 'Например: Москва',
+      cityLabel: 'Город / район', cityPh: 'Например: Москва или ул. Тверская 15, Москва',
       brandVoiceLabel: 'Голос бренда — необязательно', brandVoicePh: 'Например: дружелюбный, с юмором',
       languageLabel: 'Язык',
       tabPost: 'ПОСТ GBP', tabQA: 'ОТВЕТ КЛИЕНТУ', tabSeo: 'SEO-ТЕКСТ', tabCalendar: 'КАЛЕНДАРЬ', tabCompetitor: 'ОТЛИЧИЕ',
@@ -1235,7 +1237,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
                   <input type="file" accept="image/*" onChange={handleStorefrontUpload} className="hidden" />
                 </label>
                 {storefrontPhoto && (
-                  <img src={storefrontPhoto} alt="Storefront" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', borderRadius: 10, marginTop: 8, border: `1px solid rgba(233,79,130,0.3)` }} />
+                  <img src={storefrontPhoto} alt="Storefront" style={{ width: '100%', maxWidth: 560, maxHeight: 240, objectFit: 'cover', borderRadius: 10, marginTop: 8, border: `1px solid rgba(233,79,130,0.3)`, display: 'block', marginLeft: 'auto', marginRight: 'auto', imageRendering: 'auto' }} />
                 )}
               </div>
             )}
