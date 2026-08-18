@@ -70,7 +70,8 @@ export default function LocalSEOKit() {
     cityDebounceRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&q=${encodeURIComponent(value)}`
+          `https://nominatim.openstreetmap.org/search?format=json&limit=5&addressdetails=1&accept-language=${language}&q=${encodeURIComponent(value)}`,
+          { headers: { 'Accept-Language': language } }
         );
         const data = await res.json();
         setCitySuggestions(data || []);
@@ -571,14 +572,15 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
       await loadLeaflet();
       const query = businessName.trim() ? `${businessName}, ${city}` : city;
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`,
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=${language}&q=${encodeURIComponent(query)}`,
         { headers: { 'Accept-Language': language } }
       );
       const data = await res.json();
       if (!data || data.length === 0) {
         // Пробуем ещё раз только по городу, без названия бизнеса
         const res2 = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(city)}`
+          `https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=${language}&q=${encodeURIComponent(city)}`,
+          { headers: { 'Accept-Language': language } }
         );
         const data2 = await res2.json();
         if (!data2 || data2.length === 0) {
