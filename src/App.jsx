@@ -30,6 +30,7 @@ export default function LocalSEOKit() {
   const [competitorLoading, setCompetitorLoading] = useState(false);
 
   const [weeklyActions, setWeeklyActions] = useState(null);
+  const [showSupportEmail, setShowSupportEmail] = useState(false);
   const [mapCoords, setMapCoords] = useState(null);
   const [storefrontPhoto, setStorefrontPhoto] = useState(null);
 
@@ -175,6 +176,7 @@ export default function LocalSEOKit() {
       weeklyActionsTitle: "THIS WEEK'S 3 ACTIONS",
       locateOnMap: 'Show on map', locatingMap: 'Finding location...', locateMapError: 'Could not find that location. Try a more specific city.', resetMap: 'Reset',
       uploadStorefrontPhoto: 'Add a storefront photo', changeStorefrontPhoto: 'Change storefront photo',
+      supportLabel: 'Support',
       weeklyActionsSubtitle: 'A quick-glance plan — not just data, an actual next step.',
       generateWeeklyActions: 'Get my 3 actions', generatingWeeklyActions: 'Prioritizing...',
       calendarIntro: 'Generate 12 post ideas mapped across the month — a ready content plan instead of one post at a time.',
@@ -237,6 +239,7 @@ export default function LocalSEOKit() {
       weeklyActionsTitle: 'ТРИ ДЕЙСТВИЯ НА ЭТУ НЕДЕЛЮ',
       locateOnMap: 'Показать на карте', locatingMap: 'Ищу местоположение...', locateMapError: 'Не удалось найти это место. Уточните город.', resetMap: 'Сбросить',
       uploadStorefrontPhoto: 'Добавить фото витрины', changeStorefrontPhoto: 'Сменить фото витрины',
+      supportLabel: 'Поддержка',
       weeklyActionsSubtitle: 'План на один взгляд — не просто данные, а конкретный следующий шаг.',
       generateWeeklyActions: 'Получить мои 3 действия', generatingWeeklyActions: 'Расставляю приоритеты...',
       calendarIntro: 'Генерирует 12 идей постов на месяц вперёд — готовый план контента вместо одного поста за раз.',
@@ -1599,6 +1602,23 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           <span style={{ fontFamily: monoFont, fontSize: 10, color: INK_SOFT, letterSpacing: '0.04em' }}>
             POWERED BY CLAUDE &middot; PLAINWORK BY KSENIA
           </span>
+        </div>
+        <div className="flex items-center justify-center pt-3 pb-4">
+          {!showSupportEmail ? (
+            <button
+              onClick={() => setShowSupportEmail(true)}
+              style={{ fontFamily: monoFont, fontSize: 10, color: AMBER_DEEP, letterSpacing: '0.04em', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}
+            >
+              {t.supportLabel}
+            </button>
+          ) : (
+            <a
+              href="mailto:kssw117@gmail.com"
+              style={{ fontFamily: monoFont, fontSize: 10, color: AMBER_DEEP, letterSpacing: '0.04em' }}
+            >
+              kssw117@gmail.com
+            </a>
+          )}
         </div>
       </div>
     </div>
