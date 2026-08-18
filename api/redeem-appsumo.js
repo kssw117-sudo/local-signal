@@ -31,8 +31,13 @@ export default async function handler(req, res) {
     if (!entry) {
       return res.status(404).json({ error: 'Код не найден' });
     }
+
+    // Если код уже был активирован раньше — просто пускаем повторно.
+    // Это защищает настоящего владельца, если он потеряет доступ
+    // (очистит историю браузера, сменит устройство и т.д.) — код по сути
+    // работает как пароль, а не одноразовый ключ после первой активации.
     if (entry.redeemed) {
-      return res.status(409).json({ error: 'Этот код уже был активирован' });
+      return res.status(200).json({ success: true });
     }
 
     entry.redeemed = true;
