@@ -1,6 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 export default function LocalSEOKit() {
+  const DAILY_LIMIT = 50;
+  const LIMIT_STORAGE_KEY = 'ls_daily_gens';
+
+  function checkAndUseDailyLimit() {
+    const today = new Date().toISOString().slice(0, 10);
+    let record;
+    try {
+      record = JSON.parse(localStorage.getItem(LIMIT_STORAGE_KEY) || 'null');
+    } catch (e) {
+      record = null;
+    }
+    if (!record || record.date !== today) {
+      record = { date: today, count: 0 };
+    }
+    if (record.count >= DAILY_LIMIT) {
+      return false;
+    }
+    record.count += 1;
+    localStorage.setItem(LIMIT_STORAGE_KEY, JSON.stringify(record));
+    return true;
+  }
   const [businessName, setBusinessName] = useState('');
   const [category, setCategory] = useState('');
   const [city, setCity] = useState('');
@@ -200,6 +221,7 @@ export default function LocalSEOKit() {
       reviewExcerptLabel: 'Paste a happy review — optional', reviewExcerptPh: 'e.g. "Best latte in town, Maria always remembers my order..."',
       reviewExcerptHint: 'Pulls real phrases customers use into your description.',
       fillError: 'Fill in business name and category first.',
+      limitReached: 'Daily generation limit reached. Try again tomorrow.',
       genError: 'Could not generate. Try again.',
       copyBtn: 'Copy', copiedBtn: 'Copied',
       shortDescHeading: 'SHORT · ~150 CHARS',
@@ -263,6 +285,7 @@ export default function LocalSEOKit() {
       reviewExcerptLabel: 'Вставьте позитивный отзыв — необязательно', reviewExcerptPh: 'Например: «Лучший латте в городе, Мария всегда помнит мой заказ...»',
       reviewExcerptHint: 'Использует реальные фразы клиентов в описании.',
       fillError: 'Сначала заполните название и категорию бизнеса.',
+      limitReached: 'Достигнут дневной лимит генераций. Попробуйте завтра.',
       genError: 'Не удалось сгенерировать. Попробуйте ещё раз.',
       copyBtn: 'Копировать', copiedBtn: 'Скопировано',
       shortDescHeading: 'КОРОТКОЕ · ~150 СИМВ',
@@ -321,6 +344,10 @@ export default function LocalSEOKit() {
       setError(t.fillError);
       return;
     }
+    if (!checkAndUseDailyLimit()) {
+      setError(t.limitReached);
+      return;
+    }
     setError('');
     setPostLoading(true);
     setPostResult(null);
@@ -361,6 +388,10 @@ Google Business Profile posts should not contain phone numbers, URLs (other than
       setError(t.fillError);
       return;
     }
+    if (!checkAndUseDailyLimit()) {
+      setError(t.limitReached);
+      return;
+    }
     setError('');
     setAnswerLoading(true);
     setAnswerResult(null);
@@ -391,6 +422,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"answer": "the answe
   async function handleGenerateSeo() {
     if (!businessName.trim() || !category.trim()) {
       setError(t.fillError);
+      return;
+    }
+    if (!checkAndUseDailyLimit()) {
+      setError(t.limitReached);
       return;
     }
     setError('');
@@ -432,6 +467,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"short": "~150 chara
       setError(t.fillError);
       return;
     }
+    if (!checkAndUseDailyLimit()) {
+      setError(t.limitReached);
+      return;
+    }
     setError('');
     setCalendarLoading(true);
     setCalendarResult(null);
@@ -470,6 +509,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"weeks": [{"label": 
       setError(t.fillError);
       return;
     }
+    if (!checkAndUseDailyLimit()) {
+      setError(t.limitReached);
+      return;
+    }
     setError('');
     setCompetitorLoading(true);
     setCompetitorResult(null);
@@ -501,6 +544,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"gaps": ["short spec
   async function handleGenerateWeeklyActions() {
     if (!businessName.trim() || !category.trim()) {
       setError(t.fillError);
+      return;
+    }
+    if (!checkAndUseDailyLimit()) {
+      setError(t.limitReached);
       return;
     }
     setError('');
@@ -1598,9 +1645,12 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           </svg>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 mt-4 pt-6" style={{ borderTop: `1px solid ${LINE}` }}>
+        <div className="flex flex-col items-center justify-center gap-1 mt-4 pt-6" style={{ borderTop: `1px solid ${LINE}` }}>
           <span style={{ fontFamily: monoFont, fontSize: 10, color: INK_SOFT, letterSpacing: '0.04em' }}>
             POWERED BY CLAUDE &middot; PLAINWORK BY KSENIA
+          </span>
+          <span style={{ fontFamily: monoFont, fontSize: 9.5, color: INK_SOFT, letterSpacing: '0.02em', opacity: 0.7 }}>
+            Fair use: up to 50 generations per day
           </span>
         </div>
         <div className="flex items-center justify-center pt-3 pb-4">
