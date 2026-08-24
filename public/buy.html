@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Local Signal</title>
+<style>
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #100D24; color: #F3F0FF; font-family: -apple-system, sans-serif; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulseGlow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.08); } }
+  .bg-glow {
+    position: absolute; top: 50%; left: 50%; width: 500px; height: 500px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(242,169,59,0.18), transparent 65%);
+    animation: pulseGlow 4s ease-in-out infinite; pointer-events: none;
+  }
+  .wrap { max-width: 480px; width: 100%; text-align: center; position: relative; z-index: 1; animation: fadeUp 0.6s ease both; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #F2A93B; margin-bottom: 14px; }
+  h1 {
+    font-size: 32px; margin: 0 0 16px; font-weight: 700;
+    background: linear-gradient(90deg, #F2A93B, #E94F82);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { color: #B8B0E8; font-size: 15px; max-width: 400px; margin: 0 auto 32px; }
+  .plan {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 32px 24px;
+    backdrop-filter: blur(10px);
+    animation: fadeUp 0.6s ease both; animation-delay: 0.1s;
+  }
+  .price { font-size: 38px; font-weight: 700; margin-bottom: 4px; color: #FFFFFF; }
+  .price-note { color: #B8B0E8; font-size: 13px; margin-bottom: 24px; }
+  a.buy-btn {
+    display: inline-block; width: 100%; box-sizing: border-box; text-align: center; text-decoration: none;
+    border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 600;
+    background: linear-gradient(135deg, #F2A93B, #D98E1E); color: #111827;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  a.buy-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(242,169,59,0.45); }
+  a.buy-btn:active { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="wrap">
+  <div class="eyebrow">AI-powered &middot; Instant access</div>
+  <h1>Local Signal</h1>
+  <p class="sub">Get found on Google Search and Maps &mdash; GBP posts, Q&amp;A replies, SEO copy, and more, all in one place.</p>
+
+  <div class="plan">
+    <div class="price">$89</div>
+    <div class="price-note">one-time payment &middot; lifetime access &middot; secure card payment</div>
+    <a class="buy-btn" href="https://app.lava.top/products/557c26b5-5236-4bd2-afd3-d263d34cce10" target="_blank" rel="noopener">Buy now</a>
+  </div>
+</div>
+
+</body>
+</html>
