@@ -6,9 +6,9 @@
 <title>Local Signal</title>
 <style>
   body {
-    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: #100D24; color: #F3F0FF; font-family: -apple-system, sans-serif; padding: 24px;
-    position: relative; overflow: hidden;
+    margin: 0; background: #100D24; color: #F3F0FF;
+    font-family: -apple-system, sans-serif; line-height: 1.6;
+    position: relative; overflow-x: hidden;
   }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes pulseGlow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.08); } }
@@ -18,38 +18,54 @@
     100% { transform: translate(0, 0) rotate(-6deg); }
   }
   .bg-glow {
-    position: absolute; top: 50%; left: 50%; width: 500px; height: 500px;
+    position: fixed; top: 30%; left: 50%; width: 600px; height: 600px;
     transform: translate(-50%, -50%);
-    background: radial-gradient(circle, rgba(242,169,59,0.18), transparent 65%);
+    background: radial-gradient(circle, rgba(242,169,59,0.14), transparent 65%);
     animation: pulseGlow 4s ease-in-out infinite; pointer-events: none;
   }
-  .satellite { position: absolute; pointer-events: none; animation: orbitSat 8s ease-in-out infinite; }
-  .satellite.s1 { top: 8%; right: 8%; width: 90px; }
-  .satellite.s2 { bottom: 10%; left: 6%; width: 56px; animation-duration: 10s; animation-delay: -3s; opacity: 0.7; }
-  .wrap { max-width: 480px; width: 100%; text-align: center; position: relative; z-index: 1; animation: fadeUp 0.6s ease both; }
-  .eyebrow { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #F2A93B; margin-bottom: 14px; }
+  .satellite { position: fixed; pointer-events: none; animation: orbitSat 8s ease-in-out infinite; z-index: 0; }
+  .satellite.s1 { top: 6%; right: 8%; width: 90px; }
+  .satellite.s2 { bottom: 8%; left: 6%; width: 56px; animation-duration: 10s; animation-delay: -3s; opacity: 0.7; }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 60px 24px 100px; position: relative; z-index: 1; }
+  .eyebrow { text-align: center; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #F2A93B; margin-bottom: 14px; animation: fadeUp 0.5s ease both; }
   h1 {
-    font-size: 32px; margin: 0 0 16px; font-weight: 700;
+    font-size: 34px; text-align: center; margin: 0 0 16px; font-weight: 700; line-height: 1.2;
     background: linear-gradient(90deg, #F2A93B, #E94F82);
     -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: fadeUp 0.5s ease both; animation-delay: 0.05s;
   }
-  .sub { color: #B8B0E8; font-size: 15px; max-width: 400px; margin: 0 auto 32px; }
-  .plan {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; padding: 32px 24px;
-    backdrop-filter: blur(10px);
-    animation: fadeUp 0.6s ease both; animation-delay: 0.1s;
+  .sub { text-align: center; color: #B8B0E8; font-size: 16px; max-width: 460px; margin: 0 auto 36px; animation: fadeUp 0.5s ease both; animation-delay: 0.1s; }
+  .price-box {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;
+    padding: 32px; text-align: center; margin-bottom: 40px; backdrop-filter: blur(10px);
+    animation: fadeUp 0.5s ease both; animation-delay: 0.15s;
   }
-  .price { font-size: 38px; font-weight: 700; margin-bottom: 4px; color: #FFFFFF; }
+  .price { font-size: 42px; font-weight: 700; margin-bottom: 4px; color: #FFFFFF; }
   .price-note { color: #B8B0E8; font-size: 13px; margin-bottom: 24px; }
   .widget-wrap { display: flex; justify-content: center; }
   .widget-wrap iframe { transition: transform 0.15s ease, box-shadow 0.15s ease; border-radius: 10px; }
   .widget-wrap iframe:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(242,169,59,0.45); }
+  .features { margin: 40px 0; }
+  .feature {
+    display: flex; gap: 14px; margin-bottom: 20px; align-items: flex-start;
+    opacity: 0; animation: fadeUp 0.5s ease both;
+  }
+  .feature:nth-child(1) { animation-delay: 0.2s; }
+  .feature:nth-child(2) { animation-delay: 0.26s; }
+  .feature:nth-child(3) { animation-delay: 0.32s; }
+  .feature:nth-child(4) { animation-delay: 0.38s; }
+  .feature:nth-child(5) { animation-delay: 0.44s; }
+  .feature:nth-child(6) { animation-delay: 0.5s; }
+  .feature .dot { width: 6px; height: 6px; border-radius: 50%; background: #F2A93B; margin-top: 8px; flex-shrink: 0; }
+  .feature p { margin: 0; color: #E9E5F5; }
+  .feature strong { display: block; margin-bottom: 2px; color: #FFFFFF; }
+  footer { text-align: center; color: #8B96A5; font-size: 12px; margin-top: 60px; }
 </style>
 </head>
 <body>
 
 <div class="bg-glow"></div>
-
 <svg class="satellite s1" viewBox="0 0 100 100" fill="none">
   <rect x="40" y="40" width="20" height="20" rx="2" fill="#F2A93B"/>
   <rect x="10" y="30" width="24" height="16" rx="2" stroke="#F2A93B" stroke-width="2.5" fill="none"/>
@@ -70,15 +86,45 @@
 <div class="wrap">
   <div class="eyebrow">AI-powered &middot; Instant access</div>
   <h1>Local Signal</h1>
-  <p class="sub">Get found on Google Search and Maps &mdash; GBP posts, Q&amp;A replies, SEO copy, and more, all in one place.</p>
+  <p class="sub">Get found on Google Search and Maps -- GBP posts, Q&amp;A replies, SEO copy, and more, all in one place.</p>
 
-  <div class="plan">
+  <div class="price-box">
     <div class="price">$89</div>
     <div class="price-note">one-time payment &middot; lifetime access &middot; secure card payment</div>
     <div class="widget-wrap">
       <iframe title="lava.top" style="border: none" width="250" height="80" src="https://widget.lava.top/24360720-0a2a-49bf-804f-1fd488395535"></iframe>
     </div>
+    <div class="note" style="font-size:12px;color:#F2A93B;margin-top:16px;">Instant delivery -- your access code arrives right after payment.</div>
   </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="dot"></div>
+      <p><strong>Google Business Profile posts</strong>Automatically checked against Google's own content policy before you publish -- nothing gets flagged.</p>
+    </div>
+    <div class="feature">
+      <div class="dot"></div>
+      <p><strong>Q&amp;A reply generator</strong>Paste a customer's question and the facts -- get a ready-to-post answer in seconds.</p>
+    </div>
+    <div class="feature">
+      <div class="dot"></div>
+      <p><strong>SEO-optimized descriptions</strong>Short and long business copy, and it can weave real phrases from a happy customer review right in.</p>
+    </div>
+    <div class="feature">
+      <div class="dot"></div>
+      <p><strong>Monthly content calendar</strong>12 post ideas generated in one click, organized across four weeks.</p>
+    </div>
+    <div class="feature">
+      <div class="dot"></div>
+      <p><strong>Competitor gap analysis</strong>Paste a competitor's post and get a concrete angle to stand out where they're weak.</p>
+    </div>
+    <div class="feature">
+      <div class="dot"></div>
+      <p><strong>Interactive location map</strong>Shows your business on the map with an optional storefront photo -- no onboarding, no account connections.</p>
+    </div>
+  </div>
+
+  <footer>Plainwork &middot; a tool by Ksenia</footer>
 </div>
 
 </body>
