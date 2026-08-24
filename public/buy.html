@@ -12,12 +12,20 @@
   }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes pulseGlow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.08); } }
+  @keyframes orbitSat {
+    0%   { transform: translate(0, 0) rotate(-6deg); }
+    50%  { transform: translate(18px, -26px) rotate(10deg); }
+    100% { transform: translate(0, 0) rotate(-6deg); }
+  }
   .bg-glow {
     position: absolute; top: 50%; left: 50%; width: 500px; height: 500px;
     transform: translate(-50%, -50%);
     background: radial-gradient(circle, rgba(242,169,59,0.18), transparent 65%);
     animation: pulseGlow 4s ease-in-out infinite; pointer-events: none;
   }
+  .satellite { position: absolute; pointer-events: none; animation: orbitSat 8s ease-in-out infinite; }
+  .satellite.s1 { top: 8%; right: 8%; width: 90px; }
+  .satellite.s2 { bottom: 10%; left: 6%; width: 56px; animation-duration: 10s; animation-delay: -3s; opacity: 0.7; }
   .wrap { max-width: 480px; width: 100%; text-align: center; position: relative; z-index: 1; animation: fadeUp 0.6s ease both; }
   .eyebrow { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #F2A93B; margin-bottom: 14px; }
   h1 {
@@ -41,6 +49,23 @@
 <body>
 
 <div class="bg-glow"></div>
+
+<svg class="satellite s1" viewBox="0 0 100 100" fill="none">
+  <rect x="40" y="40" width="20" height="20" rx="2" fill="#F2A93B"/>
+  <rect x="10" y="30" width="24" height="16" rx="2" stroke="#F2A93B" stroke-width="2.5" fill="none"/>
+  <rect x="66" y="30" width="24" height="16" rx="2" stroke="#F2A93B" stroke-width="2.5" fill="none"/>
+  <line x1="34" y1="38" x2="40" y2="42" stroke="#F2A93B" stroke-width="2.5"/>
+  <line x1="66" y1="38" x2="60" y2="42" stroke="#F2A93B" stroke-width="2.5"/>
+  <line x1="46" y1="60" x2="38" y2="78" stroke="#E94F82" stroke-width="2.5"/>
+  <circle cx="36" cy="82" r="3" fill="#E94F82"/>
+</svg>
+<svg class="satellite s2" viewBox="0 0 100 100" fill="none">
+  <rect x="40" y="40" width="20" height="20" rx="2" fill="#E94F82"/>
+  <rect x="10" y="30" width="24" height="16" rx="2" stroke="#E94F82" stroke-width="2.5" fill="none"/>
+  <rect x="66" y="30" width="24" height="16" rx="2" stroke="#E94F82" stroke-width="2.5" fill="none"/>
+  <line x1="34" y1="38" x2="40" y2="42" stroke="#E94F82" stroke-width="2.5"/>
+  <line x1="66" y1="38" x2="60" y2="42" stroke="#E94F82" stroke-width="2.5"/>
+</svg>
 
 <div class="wrap">
   <div class="eyebrow">AI-powered &middot; Instant access</div>
