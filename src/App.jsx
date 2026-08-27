@@ -1,5 +1,78 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Радар-визуализация: концентрические кольца, вращающийся луч сканирования,
+// точки-сигналы ("найдены" клиентами в разных точках) — главный визуальный
+// момент хиро-панели, буквально изображающий "быть на карте"
+const RadarHero = () => {
+  // Точки-сигналы разбросаны по всей ширине панели (не только у радара) —
+  // изображают несколько "найденных" мест на карте одновременно
+  const blips = [
+    { top: '20%', left: '12%', delay: '0.2s', size: 6 },
+    { top: '68%', left: '22%', delay: '1.6s', size: 5 },
+    { top: '78%', left: '58%', delay: '0.9s', size: 6 },
+    { top: '18%', left: '48%', delay: '2.3s', size: 5 },
+    { top: '30%', left: '84%', delay: '0.5s', size: 6 },
+    { top: '75%', left: '92%', delay: '1.9s', size: 5 },
+  ];
+  return (
+    <div style={{ position: 'relative', width: '100%', height: 270, overflow: 'hidden' }}>
+      <style>{`
+        @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes blipPulse {
+          0% { transform: scale(0.4); opacity: 0; }
+          15% { opacity: 1; }
+          100% { transform: scale(1); opacity: 0; }
+        }
+        @keyframes blipCore { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
+      `}</style>
+
+      {/* фоновая точечная сетка "карты" на всю панель */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: `radial-gradient(rgba(17,24,39,0.05) 1px, transparent 1px)`,
+        backgroundSize: '18px 18px',
+      }} />
+
+      {/* рассеянные точки-сигналы по всей ширине */}
+      {blips.map((b, i) => (
+        <div key={i} style={{ position: 'absolute', top: b.top, left: b.left, width: b.size, height: b.size }}>
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%',
+            border: '1px solid #F2A93B', animation: `blipPulse 2.8s ease-out infinite`, animationDelay: b.delay,
+          }} />
+          <div style={{
+            position: 'absolute', top: b.size * 0.25, left: b.size * 0.25, width: b.size * 0.5, height: b.size * 0.5, borderRadius: '50%',
+            background: '#F2A93B', animation: `blipCore 2.8s ease-in-out infinite`, animationDelay: b.delay,
+          }} />
+        </div>
+      ))}
+
+      {/* центральный радар — крупный, заполняет панель по высоте */}
+      <div style={{ position: 'absolute', top: '50%', left: '54%', transform: 'translate(-50%,-50%)', width: 260, height: 260 }}>
+        {[46, 84, 122].map((r, i) => (
+          <div key={i} style={{
+            position: 'absolute', top: '50%', left: '50%', width: r * 2, height: r * 2,
+            transform: 'translate(-50%,-50%)', borderRadius: '50%',
+            border: `1px solid rgba(242,169,59,${0.34 - i * 0.09})`,
+          }} />
+        ))}
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          background: `conic-gradient(from 0deg, rgba(242,169,59,0.55), rgba(242,169,59,0) 28%)`,
+          animation: 'radarSpin 4s linear infinite',
+          maskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
+        }} />
+        {/* центральная метка */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', width: 9, height: 9,
+          transform: 'translate(-50%,-50%)', borderRadius: '50%', background: '#F2A93B',
+          boxShadow: `0 0 0 5px rgba(242,169,59,0.18)`,
+        }} />
+      </div>
+    </div>
+  );
+};
+
 export default function LocalSEOKit() {
   const DAILY_LIMIT = 50;
   const LIMIT_STORAGE_KEY = 'ls_daily_gens';
@@ -590,22 +663,23 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     reader.readAsDataURL(file);
   }
 
-  // Динамически подгружаем Leaflet (карта на OpenStreetMap) с CDN —
-  // без npm-пакетов, без API-ключа. Тёмные плитки CartoDB тоже бесплатны.
-  function loadLeaflet() {
+  // Динамически подгружаем MapLibre GL JS + бесплатные векторные тайлы
+  // OpenFreeMap — без API-ключа, без лимитов, выглядит гораздо живее
+  // растровых тайлов (цветные дороги, здания), и зум работает "из коробки".
+  function loadMapLibre() {
     return new Promise((resolve) => {
-      if (window.L) {
+      if (window.maplibregl) {
         leafletReadyRef.current = true;
         resolve();
         return;
       }
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.href = 'https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css';
       document.head.appendChild(link);
 
       const script = document.createElement('script');
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.src = 'https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js';
       script.onload = () => {
         leafletReadyRef.current = true;
         resolve();
@@ -619,7 +693,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     setMapError(false);
     setMapLoading(true);
     try {
-      await loadLeaflet();
+      await loadMapLibre();
       const query = businessName.trim() ? `${businessName}, ${city}` : city;
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=${language}&q=${encodeURIComponent(query)}`,
@@ -651,39 +725,34 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
 
   // Инициализация/обновление карты при появлении координат
   useEffect(() => {
-    if (!mapCoords || !mapContainerRef.current || !window.L) return;
-    const L = window.L;
+    if (!mapCoords || !mapContainerRef.current || !window.maplibregl) return;
+    const maplibregl = window.maplibregl;
 
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
     }
 
-    const map = L.map(mapContainerRef.current, {
-      zoomControl: false,
-      attributionControl: true,
-    }).setView([mapCoords.lat, mapCoords.lng], 16);
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+      center: [mapCoords.lng, mapCoords.lat],
+      zoom: 16,
+      attributionControl: false,
+    });
 
-    // Убираем стандартный префикс Leaflet (включая флаг Украины) —
-    // оставляем только нужную атрибуцию OpenStreetMap/CARTO
-    map.attributionControl.setPrefix('');
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      maxZoom: 20,
-    }).addTo(map);
+    // Зум-кнопки (+/-) и компас — включены по умолчанию, чего не было в старой карте
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: true }));
 
     // Кастомная метка в фирменных цветах (янтарь + розовое кольцо), как точки-сигналы радара
-    const icon = L.divIcon({
-      className: '',
-      html: `<div style="position:relative;width:22px;height:22px;">
-        <div style="position:absolute;inset:0;border-radius:50%;border:2px solid #E94F82;opacity:0.6;"></div>
-        <div style="position:absolute;top:5px;left:5px;width:12px;height:12px;border-radius:50%;background:#F2A93B;box-shadow:0 0 8px rgba(242,169,59,0.8);"></div>
-      </div>`,
-      iconSize: [22, 22],
-      iconAnchor: [11, 11],
-    });
-    L.marker([mapCoords.lat, mapCoords.lng], { icon }).addTo(map);
+    const el = document.createElement('div');
+    el.style.cssText = 'position:relative;width:22px;height:22px;';
+    el.innerHTML = `
+      <div style="position:absolute;inset:0;border-radius:50%;border:2px solid #E94F82;opacity:0.6;"></div>
+      <div style="position:absolute;top:5px;left:5px;width:12px;height:12px;border-radius:50%;background:#F2A93B;box-shadow:0 0 8px rgba(242,169,59,0.8);"></div>
+    `;
+    new maplibregl.Marker({ element: el }).setLngLat([mapCoords.lng, mapCoords.lat]).addTo(map);
 
     mapInstanceRef.current = map;
 
@@ -754,78 +823,6 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     </div>
   );
 
-  // Радар-визуализация: концентрические кольца, вращающийся луч сканирования,
-  // точки-сигналы ("найдены" клиентами в разных точках) — главный визуальный
-  // момент хиро-панели, буквально изображающий "быть на карте"
-  const RadarHero = () => {
-    // Точки-сигналы разбросаны по всей ширине панели (не только у радара) —
-    // изображают несколько "найденных" мест на карте одновременно
-    const blips = [
-      { top: '20%', left: '12%', delay: '0.2s', size: 6 },
-      { top: '68%', left: '22%', delay: '1.6s', size: 5 },
-      { top: '78%', left: '58%', delay: '0.9s', size: 6 },
-      { top: '18%', left: '48%', delay: '2.3s', size: 5 },
-      { top: '30%', left: '84%', delay: '0.5s', size: 6 },
-      { top: '75%', left: '92%', delay: '1.9s', size: 5 },
-    ];
-    return (
-      <div style={{ position: 'relative', width: '100%', height: 270, overflow: 'hidden' }}>
-        <style>{`
-          @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-          @keyframes blipPulse {
-            0% { transform: scale(0.4); opacity: 0; }
-            15% { opacity: 1; }
-            100% { transform: scale(1); opacity: 0; }
-          }
-          @keyframes blipCore { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
-        `}</style>
-
-        {/* фоновая точечная сетка "карты" на всю панель */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `radial-gradient(rgba(17,24,39,0.05) 1px, transparent 1px)`,
-          backgroundSize: '18px 18px',
-        }} />
-
-        {/* рассеянные точки-сигналы по всей ширине */}
-        {blips.map((b, i) => (
-          <div key={i} style={{ position: 'absolute', top: b.top, left: b.left, width: b.size, height: b.size }}>
-            <div style={{
-              position: 'absolute', inset: 0, borderRadius: '50%',
-              border: `1px solid ${AMBER}`, animation: `blipPulse 2.8s ease-out infinite`, animationDelay: b.delay,
-            }} />
-            <div style={{
-              position: 'absolute', top: b.size * 0.25, left: b.size * 0.25, width: b.size * 0.5, height: b.size * 0.5, borderRadius: '50%',
-              background: AMBER, animation: `blipCore 2.8s ease-in-out infinite`, animationDelay: b.delay,
-            }} />
-          </div>
-        ))}
-
-        {/* центральный радар — крупный, заполняет панель по высоте */}
-        <div style={{ position: 'absolute', top: '50%', left: '54%', transform: 'translate(-50%,-50%)', width: 260, height: 260 }}>
-          {[46, 84, 122].map((r, i) => (
-            <div key={i} style={{
-              position: 'absolute', top: '50%', left: '50%', width: r * 2, height: r * 2,
-              transform: 'translate(-50%,-50%)', borderRadius: '50%',
-              border: `1px solid rgba(242,169,59,${0.34 - i * 0.09})`,
-            }} />
-          ))}
-          <div style={{
-            position: 'absolute', inset: 0, borderRadius: '50%',
-            background: `conic-gradient(from 0deg, rgba(242,169,59,0.55), rgba(242,169,59,0) 28%)`,
-            animation: 'radarSpin 4s linear infinite',
-            maskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
-          }} />
-          {/* центральная метка */}
-          <div style={{
-            position: 'absolute', top: '50%', left: '50%', width: 9, height: 9,
-            transform: 'translate(-50%,-50%)', borderRadius: '50%', background: AMBER,
-            boxShadow: `0 0 0 5px rgba(242,169,59,0.18)`,
-          }} />
-        </div>
-      </div>
-    );
-  };
 
   const AboutModal = () => {
     if (!showAbout) return null;
