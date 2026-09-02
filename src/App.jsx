@@ -77,6 +77,18 @@ export default function LocalSEOKit() {
   const DAILY_LIMIT = 50;
   const LIMIT_STORAGE_KEY = 'ls_daily_gens';
 
+  function getDailyCount() {
+    const today = new Date().toISOString().slice(0, 10);
+    let record;
+    try {
+      record = JSON.parse(localStorage.getItem(LIMIT_STORAGE_KEY) || 'null');
+    } catch (e) {
+      record = null;
+    }
+    if (!record || record.date !== today) return 0;
+    return record.count;
+  }
+
   function checkAndUseDailyLimit() {
     const today = new Date().toISOString().slice(0, 10);
     let record;
@@ -95,6 +107,7 @@ export default function LocalSEOKit() {
     localStorage.setItem(LIMIT_STORAGE_KEY, JSON.stringify(record));
     return true;
   }
+  const [dailyCount, setDailyCount] = useState(() => getDailyCount());
   const [businessName, setBusinessName] = useState('');
   const [category, setCategory] = useState('');
   const [city, setCity] = useState('');
@@ -418,9 +431,11 @@ export default function LocalSEOKit() {
       return;
     }
     if (!checkAndUseDailyLimit()) {
+      setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
     }
+    setDailyCount(getDailyCount());
     setError('');
     setPostLoading(true);
     setPostResult(null);
@@ -462,9 +477,11 @@ Google Business Profile posts should not contain phone numbers, URLs (other than
       return;
     }
     if (!checkAndUseDailyLimit()) {
+      setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
     }
+    setDailyCount(getDailyCount());
     setError('');
     setAnswerLoading(true);
     setAnswerResult(null);
@@ -498,9 +515,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"answer": "the answe
       return;
     }
     if (!checkAndUseDailyLimit()) {
+      setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
     }
+    setDailyCount(getDailyCount());
     setError('');
     setSeoLoading(true);
     setSeoResult(null);
@@ -541,9 +560,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"short": "~150 chara
       return;
     }
     if (!checkAndUseDailyLimit()) {
+      setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
     }
+    setDailyCount(getDailyCount());
     setError('');
     setCalendarLoading(true);
     setCalendarResult(null);
@@ -583,9 +604,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"weeks": [{"label": 
       return;
     }
     if (!checkAndUseDailyLimit()) {
+      setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
     }
+    setDailyCount(getDailyCount());
     setError('');
     setCompetitorLoading(true);
     setCompetitorResult(null);
@@ -620,9 +643,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"gaps": ["short spec
       return;
     }
     if (!checkAndUseDailyLimit()) {
+      setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
     }
+    setDailyCount(getDailyCount());
     setError('');
     setWeeklyActionsLoading(true);
     setWeeklyActions(null);
@@ -1642,12 +1667,26 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           </svg>
         </div>
 
+        <div style={{ maxWidth: 480, margin: '0 auto 16px' }}>
+          <div className="flex items-center justify-between" style={{ marginBottom: 4 }}>
+            <span style={{ fontFamily: monoFont, fontSize: 9.5, color: INK_SOFT }}>Today's free generations</span>
+            <span style={{ fontFamily: monoFont, fontSize: 9.5, color: INK_SOFT, fontWeight: 600 }}>{DAILY_LIMIT - dailyCount}/{DAILY_LIMIT} left</span>
+          </div>
+          <div style={{ height: 4, borderRadius: 999, background: LINE, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: 999, width: `${(dailyCount / DAILY_LIMIT) * 100}%`,
+              background: dailyCount >= DAILY_LIMIT ? '#E05C5C' : AMBER,
+              transition: 'width 0.3s ease',
+            }} />
+          </div>
+          {dailyCount >= DAILY_LIMIT && (
+            <p style={{ fontFamily: monoFont, fontSize: 9.5, color: '#E05C5C', textAlign: 'center', marginTop: 8 }}>Today's limit reached — come back tomorrow for 50 more free generations.</p>
+          )}
+        </div>
+
         <div className="flex flex-col items-center justify-center gap-1 mt-4 pt-6" style={{ borderTop: `1px solid ${LINE}` }}>
           <span style={{ fontFamily: monoFont, fontSize: 10, color: INK_SOFT, letterSpacing: '0.04em' }}>
             POWERED BY CLAUDE &middot; PLAINWORK BY KSENIA
-          </span>
-          <span style={{ fontFamily: monoFont, fontSize: 9.5, color: INK_SOFT, letterSpacing: '0.02em', opacity: 0.7 }}>
-            Fair use: up to 50 generations per day
           </span>
         </div>
         <div className="flex items-center justify-center pt-3 pb-4">
