@@ -238,6 +238,7 @@ export default function LocalSEOKit() {
 
   const [licenseCode, setLicenseCode] = useState(() => localStorage.getItem('seo_licenseCode') || '');
   const [unlocked, setUnlocked] = useState(() => localStorage.getItem('seo_unlocked') === 'true');
+  const [freeTrialUsed, setFreeTrialUsed] = useState(() => localStorage.getItem('ls_free_trial_used') === 'true');
   const [licenseError, setLicenseError] = useState('');
 
   const languages = [
@@ -412,13 +413,21 @@ export default function LocalSEOKit() {
   const TEXT_LIGHT = '#111827';
 
   async function callGenerate(prompt) {
+    if (!unlocked && freeTrialUsed) {
+      throw new Error('license');
+    }
+    const isTrial = !unlocked && !freeTrialUsed;
     const response = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ licenseCode, prompt }),
+      body: JSON.stringify({ licenseCode, prompt, trial: isTrial }),
     });
     if (response.status === 403) {
       throw new Error('license');
+    }
+    if (isTrial) {
+      localStorage.setItem('ls_free_trial_used', 'true');
+      setFreeTrialUsed(true);
     }
     const data = await response.json();
     const text = data.content.map(b => b.text || '').join('');
@@ -929,84 +938,6 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
     );
   };
 
-  if (!unlocked) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4 py-10" dir={currentLang.rtl ? 'rtl' : 'ltr'} style={{
-        fontFamily: bodyFont,
-        background: `linear-gradient(120deg, #F7F3EC, #FBEAF0, #F5F4EE, #F7F3EC)`,
-        backgroundSize: '300% 300%',
-        
-      }}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Cairo:wght@400;700&display=swap');
-          @keyframes gradientDrift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-          @keyframes cardRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-          @keyframes shimmerSweep { 0% { left: -150%; } 55%, 100% { left: 150%; } }
-          .ls-shimmer { position: relative; overflow: hidden; }
-          .ls-shimmer::after {
-            content: ''; position: absolute; top: 0; left: -150%; width: 55%; height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
-            transform: skewX(-20deg); animation: shimmerSweep 3.2s ease-in-out infinite;
-          }
-          .ls-card { animation: cardRise 0.5s cubic-bezier(0.2,0.8,0.2,1) both; }
-          .ls-btn { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-          .ls-btn:hover { transform: translateY(-2px) scale(1.01); }
-        `}</style>
-        <AboutModal />
-        <div className="w-full max-w-sm ls-card">
-          <div className="rounded-t-2xl px-6 pt-6 relative" style={{ background: INK, overflow: 'hidden' }}>
-            <div className="flex items-center justify-between relative" style={{ zIndex: 1 }}>
-              <button
-                onClick={() => setShowAbout(true)}
-                style={{ fontFamily: monoFont, fontSize: 10.5, letterSpacing: '0.1em', color: AMBER, background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}
-              >
-                LOCAL SIGNAL
-              </button>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="text-xs rounded px-2 py-1 focus:outline-none"
-                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#C7D0DA', fontFamily: monoFont }}
-              >
-                {languages.map(l => (
-                  <option key={l.code} value={l.code} style={{ color: TEXT_LIGHT }}>{l.label}</option>
-                ))}
-              </select>
-            </div>
-            <RadarHero />
-          </div>
-          <div className="rounded-b-2xl px-6 pb-7 pt-5 relative" style={{ background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.5)', borderTop: 'none', overflow: 'hidden', boxShadow: '0 24px 48px -12px rgba(242,169,59,0.25)' }}>
-            <div style={{
-              position: 'absolute', top: -60, right: -60, width: 160, height: 160, borderRadius: '50%',
-              background: `radial-gradient(circle, rgba(242,169,59,0.14), transparent 70%)`, pointerEvents: 'none',
-            }} />
-            <h1 className="text-2xl mb-5 relative" style={{ fontFamily: displayFont, fontWeight: 700, color: TEXT_LIGHT }}>
-              {t.licenseGateTitle}
-            </h1>
-            <input
-              type="text"
-              value={licenseCode}
-              onChange={(e) => setLicenseCode(e.target.value)}
-              placeholder={t.licensePh}
-              className="w-full rounded px-3 py-2.5 text-sm mb-3 focus:outline-none relative"
-              style={{ width: "100%", boxSizing: "border-box", background: BG, border: `1px solid ${LINE}`, color: TEXT_LIGHT, fontFamily: monoFont }}
-            />
-            {licenseError && <p className="text-sm mb-3 relative" style={{ color: '#C0472F' }}>{licenseError}</p>}
-            <button
-              onClick={handleUnlock}
-              className="w-full font-semibold py-2.5 rounded text-sm relative ls-shimmer"
-              style={{ background: `linear-gradient(135deg, ${AMBER}, ${AMBER_DEEP})`, color: TEXT_LIGHT, boxShadow: `0 0 28px rgba(242,169,59,0.55)` }}
-            >
-              {t.unlockBtn}
-            </button>
-            <a href="/buy.html" className="block text-center text-xs mt-4 relative" style={{ color: TEAL }}>
-              {t.noCodeText}
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const tabs = [
     { id: 'post', label: t.tabPost },
@@ -1135,6 +1066,36 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
             background: `radial-gradient(circle, rgba(217,142,30,0.10), transparent 70%)`, pointerEvents: 'none', filter: 'blur(6px)',
           }} />
           <div className="relative">
+          {!unlocked && (
+            <div className="rounded-lg p-3 mb-4" style={{ background: freeTrialUsed ? 'rgba(192,71,47,0.08)' : 'rgba(242,169,59,0.1)', border: `1px solid ${freeTrialUsed ? 'rgba(192,71,47,0.3)' : 'rgba(242,169,59,0.35)'}` }}>
+            {freeTrialUsed ? (
+              <>
+                <p className="text-sm" style={{ color: '#C0472F', margin: 0, fontWeight: 600, fontFamily: bodyFont }}>Free preview used</p>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={licenseCode}
+                    onChange={(e) => setLicenseCode(e.target.value)}
+                    placeholder={t.licensePh}
+                    className="flex-1 rounded px-3 py-2 text-sm focus:outline-none"
+                    style={{ background: BG, border: `1px solid ${LINE}`, color: TEXT_LIGHT, fontFamily: monoFont }}
+                  />
+                  <button
+                    onClick={handleUnlock}
+                    className="font-semibold px-4 rounded text-sm"
+                    style={{ background: `linear-gradient(135deg, ${AMBER}, ${AMBER_DEEP})`, color: TEXT_LIGHT }}
+                  >
+                    {t.unlockBtn}
+                  </button>
+                </div>
+                {licenseError && <p className="text-sm mt-2" style={{ color: '#C0472F' }}>{licenseError}</p>}
+                <a href="/buy.html" className="block text-xs mt-2" style={{ color: TEAL }}>{t.noCodeText}</a>
+              </>
+            ) : (
+              <p className="text-sm" style={{ color: '#8A6B1A', margin: 0, fontFamily: bodyFont }}>✨ Try it free — your first generation is on us. No code needed.</p>
+            )}
+            </div>
+          )}
           <div className="flex items-center gap-2 mb-3">
             <span style={{ width: 16, height: 1, background: AMBER_DEEP, display: 'inline-block' }} />
             <h2 style={{ fontFamily: monoFont, fontSize: 10, letterSpacing: '0.08em', color: INK_SOFT }}>{t.businessDetailsLabel}</h2>
