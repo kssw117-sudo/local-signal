@@ -108,6 +108,26 @@ export default function LocalSEOKit() {
     return true;
   }
   const [dailyCount, setDailyCount] = useState(() => getDailyCount());
+  const [usedToolsThisRound, setUsedToolsThisRound] = useState(() => new Set());
+
+  // Лимит в 50/день теперь списывается не за каждую отдельную генерацию,
+  // а один раз за "раунд" — когда использованы все шесть инструментов
+  // (пост, ответ, SEO, календарь, конкурент, недельные действия).
+  function useDailyLimitForTool(toolType) {
+    if (dailyCount >= DAILY_LIMIT) return false;
+    setUsedToolsThisRound((prev) => {
+      const next = new Set(prev);
+      next.add(toolType);
+      if (next.size >= 6) {
+        checkAndUseDailyLimit();
+        setDailyCount(getDailyCount());
+        return new Set();
+      }
+      return next;
+    });
+    return true;
+  }
+
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
@@ -450,7 +470,7 @@ export default function LocalSEOKit() {
       setError(t.fillError);
       return;
     }
-    if (!checkAndUseDailyLimit()) {
+    if (!useDailyLimitForTool('post')) {
       setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
@@ -496,7 +516,7 @@ Google Business Profile posts should not contain phone numbers, URLs (other than
       setError(t.fillError);
       return;
     }
-    if (!checkAndUseDailyLimit()) {
+    if (!useDailyLimitForTool('answer')) {
       setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
@@ -534,7 +554,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"answer": "the answe
       setError(t.fillError);
       return;
     }
-    if (!checkAndUseDailyLimit()) {
+    if (!useDailyLimitForTool('seo')) {
       setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
@@ -579,7 +599,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"short": "~150 chara
       setError(t.fillError);
       return;
     }
-    if (!checkAndUseDailyLimit()) {
+    if (!useDailyLimitForTool('calendar')) {
       setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
@@ -623,7 +643,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"weeks": [{"label": 
       setError(t.fillError);
       return;
     }
-    if (!checkAndUseDailyLimit()) {
+    if (!useDailyLimitForTool('competitor')) {
       setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
@@ -662,7 +682,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"gaps": ["short spec
       setError(t.fillError);
       return;
     }
-    if (!checkAndUseDailyLimit()) {
+    if (!useDailyLimitForTool('weekly')) {
       setDailyCount(DAILY_LIMIT);
       setError(t.limitReached);
       return;
