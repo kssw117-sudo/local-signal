@@ -1,68 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Enter your code — Local Signal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
 <style>
   body {
-    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    background: #14120F; color: #F5F1E8; font-family: 'Space Grotesk', sans-serif; padding: 24px;
-    position: relative; overflow: hidden;
+    margin: 0; background: #100D24; color: #F3F0FF;
+    font-family: -apple-system, sans-serif; line-height: 1.6;
+    position: relative; overflow-x: hidden;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
   }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0.9; } }
-  .radar-ring {
-    position: absolute; border-radius: 50%; border: 1px solid rgba(242,169,59,0.25);
-    animation: ringPulse 4s ease-in-out infinite;
+  @keyframes pulseGlow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.08); } }
+  @keyframes orbitSat {
+    0%   { transform: translate(0, 0) rotate(-6deg); }
+    50%  { transform: translate(18px, -26px) rotate(10deg); }
+    100% { transform: translate(0, 0) rotate(-6deg); }
   }
-  .r1 { width: 260px; height: 260px; top: 10%; left: -60px; animation-delay: 0s; }
-  .r2 { width: 180px; height: 180px; bottom: 6%; right: -40px; animation-delay: -1.5s; }
-  @keyframes orbit { from { transform: rotate(0deg) translateX(var(--radius)) rotate(0deg); } to { transform: rotate(360deg) translateX(var(--radius)) rotate(-360deg); } }
-  @keyframes blipPulse { 0%, 100% { opacity: 0.4; box-shadow: 0 0 0 0 rgba(242,169,59,0.4); } 50% { opacity: 1; box-shadow: 0 0 8px 2px rgba(242,169,59,0.5); } }
-  .satellite {
-    position: absolute; width: 8px; height: 8px; border-radius: 50%;
-    background: #F2A93B; animation: orbit linear infinite, blipPulse 2s ease-in-out infinite;
+  .bg-glow {
+    position: fixed; top: 30%; left: 50%; width: 600px; height: 600px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(242,169,59,0.14), transparent 65%);
+    animation: pulseGlow 4s ease-in-out infinite; pointer-events: none;
   }
-  .s1 { top: 10%; left: calc(-60px + 130px); animation-duration: 14s, 2s; --radius: 130px; }
-  .s2 { bottom: 6%; right: calc(-40px + 90px); animation-duration: 10s, 1.6s; --radius: 90px; animation-direction: reverse, normal; background: #E94F82; }
-  .s3 { top: 32%; right: 12%; width: 5px; height: 5px; animation: blipPulse 2.4s ease-in-out infinite; animation-delay: -0.8s; }
-  .wrap { max-width: 400px; width: 100%; text-align: center; animation: fadeUp 0.5s ease both; position: relative; z-index: 1; }
-  .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(242,169,59,0.2); border-radius: 16px; padding: 32px 28px; backdrop-filter: blur(12px); }
+  .satellite { position: fixed; pointer-events: none; animation: orbitSat 8s ease-in-out infinite; z-index: 0; }
+  .satellite.s1 { top: 6%; right: 8%; width: 90px; }
+  .satellite.s2 { bottom: 8%; left: 6%; width: 56px; animation-duration: 10s; animation-delay: -3s; opacity: 0.7; }
+
+  .wrap { max-width: 400px; width: 100%; margin: 0 auto; padding: 24px; position: relative; z-index: 1; }
+  .eyebrow { text-align: center; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #F2A93B; margin-bottom: 14px; animation: fadeUp 0.5s ease both; }
+  h1 {
+    font-size: 30px; text-align: center; margin: 0 0 10px; font-weight: 700; line-height: 1.2;
+    background: linear-gradient(90deg, #F2A93B, #E94F82);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: fadeUp 0.5s ease both; animation-delay: 0.05s;
+  }
+  .sub { text-align: center; color: #B8B0E8; font-size: 14px; max-width: 340px; margin: 0 auto 32px; animation: fadeUp 0.5s ease both; animation-delay: 0.1s; }
+  .card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px;
+    padding: 28px; backdrop-filter: blur(10px);
+    animation: fadeUp 0.5s ease both; animation-delay: 0.15s;
+  }
   input {
     width: 100%; box-sizing: border-box; border-radius: 8px; padding: 12px 14px; font-size: 15px;
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #F5F1E8; margin-bottom: 12px; outline: none;
-    font-family: 'Space Grotesk', sans-serif;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.18); color: #F3F0FF; margin-bottom: 12px; outline: none;
+    font-family: -apple-system, sans-serif;
   }
   button {
     width: 100%; border: none; cursor: pointer; border-radius: 8px; padding: 13px;
-    font-size: 15px; font-weight: 600; background: linear-gradient(135deg, #F2A93B, #D98E1E); color: #14120F;
-    transition: transform 0.15s ease; font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px; font-weight: 700; background: linear-gradient(90deg, #F2A93B, #E94F82); color: #100D24;
+    transition: transform 0.15s ease;
   }
   button:hover { transform: translateY(-1px); }
   button:disabled { opacity: 0.6; cursor: default; }
-  .error { color: #E88A6E; font-size: 13px; margin-top: 10px; }
-  .back { display: inline-block; margin-top: 16px; color: #7BC9C4; font-size: 13px; text-decoration: underline; }
+  .error { color: #E88A6E; font-size: 13px; margin-top: 10px; text-align: center; }
+  .back-link { text-align: center; margin-top: 16px; }
+  .back-link a { color: #F2A93B; font-size: 13px; text-decoration: underline; }
 </style>
 </head>
 <body>
 
-<div class="radar-ring r1"></div>
-<div class="radar-ring r2"></div>
-<div class="satellite s1"></div>
-<div class="satellite s2"></div>
-<div class="satellite s3"></div>
+<div class="bg-glow"></div>
+<svg class="satellite s1" viewBox="0 0 100 100" fill="none">
+  <rect x="40" y="40" width="20" height="20" rx="2" fill="#F2A93B"/>
+  <rect x="10" y="30" width="24" height="16" rx="2" stroke="#F2A93B" stroke-width="2.5" fill="none"/>
+  <rect x="66" y="30" width="24" height="16" rx="2" stroke="#F2A93B" stroke-width="2.5" fill="none"/>
+  <line x1="34" y1="38" x2="40" y2="42" stroke="#F2A93B" stroke-width="2.5"/>
+  <line x1="66" y1="38" x2="60" y2="42" stroke="#F2A93B" stroke-width="2.5"/>
+  <line x1="46" y1="60" x2="38" y2="78" stroke="#E94F82" stroke-width="2.5"/>
+  <circle cx="36" cy="82" r="3" fill="#E94F82"/>
+</svg>
+<svg class="satellite s2" viewBox="0 0 100 100" fill="none">
+  <rect x="40" y="40" width="20" height="20" rx="2" fill="#E94F82"/>
+  <rect x="10" y="30" width="24" height="16" rx="2" stroke="#E94F82" stroke-width="2.5" fill="none"/>
+  <rect x="66" y="30" width="24" height="16" rx="2" stroke="#E94F82" stroke-width="2.5" fill="none"/>
+  <line x1="34" y1="38" x2="40" y2="42" stroke="#E94F82" stroke-width="2.5"/>
+  <line x1="66" y1="38" x2="60" y2="42" stroke="#E94F82" stroke-width="2.5"/>
+</svg>
 
 <div class="wrap">
+  <div class="eyebrow">Local Signal</div>
+  <h1>Enter your code</h1>
+  <p class="sub">Unlock unlimited generations across all six tools.</p>
+
   <div class="card">
-    <h1 style="font-size:24px; font-weight:600; margin:0 0 8px;">Enter your code</h1>
-    <p style="color:#B5AFA0; font-size:14px; margin:0 0 22px;">Unlock unlimited generations on Local Signal.</p>
     <input type="text" id="codeInput" placeholder="Your access code" />
     <button id="unlockBtn" onclick="unlock()">Unlock</button>
     <p class="error" id="errorMsg" style="display:none;"></p>
-    <a class="back" href="/">← Back without unlocking</a>
+    <div class="back-link"><a href="/">← Back without unlocking</a></div>
   </div>
 </div>
 
