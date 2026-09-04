@@ -1,7 +1,7 @@
 // api/generate.js
 // Принимает три случая:
 // 1. Общий код с Getly, хранится в переменной окружения ACCESS_CODE
-// 2. Уникальные AppSumo-коды вида SIGNAL-XXXX-XXXX (сами коды проверяются
+// 2. Уникальные AppSumo-коды вида SEO-XXXX-XXXX (сами коды проверяются
 //    и гасятся отдельной функцией /api/redeem-appsumo при разблокировке;
 //    здесь просто пропускаем любой код с этим префиксом)
 // 3. trial: true — одна бесплатная генерация без кода, чтобы модераторы
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   const { licenseCode, prompt, trial } = req.body;
 
   const isSharedCode = licenseCode && licenseCode === process.env.ACCESS_CODE;
-  const isAppSumoCode = licenseCode && licenseCode.trim().toUpperCase().startsWith('SIGNAL-');
+  const isAppSumoCode = licenseCode && licenseCode.trim().toUpperCase().startsWith('SEO-');
   const isFreeTrial = trial === true;
 
   if (!isFreeTrial && (!licenseCode || (!isSharedCode && !isAppSumoCode))) {
