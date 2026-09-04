@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Enter your code — Local Signal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: #14120F; color: #F5F1E8; font-family: 'Space Grotesk', sans-serif; padding: 24px;
+    position: relative; overflow: hidden;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0.9; } }
+  .radar-ring {
+    position: absolute; border-radius: 50%; border: 1px solid rgba(242,169,59,0.25);
+    animation: ringPulse 4s ease-in-out infinite;
+  }
+  .r1 { width: 260px; height: 260px; top: 10%; left: -60px; animation-delay: 0s; }
+  .r2 { width: 180px; height: 180px; bottom: 6%; right: -40px; animation-delay: -1.5s; }
+  .wrap { max-width: 400px; width: 100%; text-align: center; animation: fadeUp 0.5s ease both; position: relative; z-index: 1; }
+  .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(242,169,59,0.2); border-radius: 16px; padding: 32px 28px; backdrop-filter: blur(12px); }
+  input {
+    width: 100%; box-sizing: border-box; border-radius: 8px; padding: 12px 14px; font-size: 15px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #F5F1E8; margin-bottom: 12px; outline: none;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  button {
+    width: 100%; border: none; cursor: pointer; border-radius: 8px; padding: 13px;
+    font-size: 15px; font-weight: 600; background: linear-gradient(135deg, #F2A93B, #D98E1E); color: #14120F;
+    transition: transform 0.15s ease; font-family: 'Space Grotesk', sans-serif;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:disabled { opacity: 0.6; cursor: default; }
+  .error { color: #E88A6E; font-size: 13px; margin-top: 10px; }
+  .back { display: inline-block; margin-top: 16px; color: #7BC9C4; font-size: 13px; text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="radar-ring r1"></div>
+<div class="radar-ring r2"></div>
+
+<div class="wrap">
+  <div class="card">
+    <h1 style="font-size:24px; font-weight:600; margin:0 0 8px;">Enter your code</h1>
+    <p style="color:#B5AFA0; font-size:14px; margin:0 0 22px;">Unlock unlimited generations on Local Signal.</p>
+    <input type="text" id="codeInput" placeholder="Your access code" />
+    <button id="unlockBtn" onclick="unlock()">Unlock</button>
+    <p class="error" id="errorMsg" style="display:none;"></p>
+    <a class="back" href="/">← Back without unlocking</a>
+  </div>
+</div>
+
+<script>
+  async function unlock() {
+    const code = document.getElementById('codeInput').value.trim();
+    const btn = document.getElementById('unlockBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.style.display = 'none';
+    if (!code) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Checking...';
+
+    try {
+      if (code.toUpperCase().startsWith('SEO-')) {
+        const res = await fetch('/api/redeem-appsumo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Code not recognized.');
+        }
+      }
+      localStorage.setItem('seo_unlocked', 'true');
+      localStorage.setItem('seo_licenseCode', code);
+      window.location.href = '/?welcome=1';
+    } catch (err) {
+      errorMsg.textContent = err.message || 'Something went wrong.';
+      errorMsg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Unlock';
+    }
+  }
+
+  document.getElementById('codeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') unlock();
+  });
+</script>
+
+</body>
+</html>
