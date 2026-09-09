@@ -1732,6 +1732,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           <span style={{ fontFamily: monoFont, fontSize: 10, color: INK_SOFT, letterSpacing: '0.04em' }}>
             POWERED BY CLAUDE &middot; PLAINWORK BY KSENIA
           </span>
+          <div className="flex items-center gap-3 mt-1">
+            <a href="/terms.html" style={{ fontFamily: monoFont, fontSize: 9.5, color: AMBER_DEEP }}>TERMS</a>
+            <a href="/privacy.html" style={{ fontFamily: monoFont, fontSize: 9.5, color: AMBER_DEEP }}>PRIVACY</a>
+            <a href="/refund.html" style={{ fontFamily: monoFont, fontSize: 9.5, color: AMBER_DEEP }}>REFUNDS</a>
+          </div>
         </div>
         <div className="flex items-center justify-center pt-3 pb-4">
           {!showSupportEmail ? (
