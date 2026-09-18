@@ -1,5 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Маленький помощник для IndexedDB — используем для фото витрины,
+// т.к. оно в base64 легко превышает лимит localStorage
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('ls_drafts', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('files');
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(key) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('files', 'readonly');
+      const req = tx.objectStore('files').get(key);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  } catch (e) { return null; }
+}
+async function idbSet(key, value) {
+  try {
+    const db = await idbOpen();
+    return await new Promise((resolve, reject) => {
+      const tx = db.transaction('files', 'readwrite');
+      tx.objectStore('files').put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  } catch (e) { /* тихо игнорируем — фото просто не сохранится черновиком */ }
+}
+
 // Радар-визуализация: концентрические кольца, вращающийся луч сканирования,
 // точки-сигналы ("найдены" клиентами в разных точках) — главный визуальный
 // момент хиро-панели, буквально изображающий "быть на карте"
@@ -139,10 +172,10 @@ export default function LocalSEOKit() {
     }
   }, []);
 
-  const [businessName, setBusinessName] = useState('');
-  const [category, setCategory] = useState('');
-  const [city, setCity] = useState('');
-  const [brandVoice, setBrandVoice] = useState('');
+  const [businessName, setBusinessName] = useState(() => localStorage.getItem('ls_draft_businessName') || '');
+  const [category, setCategory] = useState(() => localStorage.getItem('ls_draft_category') || '');
+  const [city, setCity] = useState(() => localStorage.getItem('ls_draft_city') || '');
+  const [brandVoice, setBrandVoice] = useState(() => localStorage.getItem('ls_draft_brandVoice') || '');
   const [language, setLanguage] = useState('en');
   const [activeTab, setActiveTab] = useState('post');
 
@@ -169,6 +202,26 @@ export default function LocalSEOKit() {
 
   const [weeklyActions, setWeeklyActions] = useState(null);
   const [showSupportEmail, setShowSupportEmail] = useState(false);
+  const [showHelpBubble, setShowHelpBubble] = useState(false);
+
+  // Лёгкий "поп"-звук для открытия/закрытия окошка подсказки
+  function playPopSound(opening) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(opening ? 520 : 380, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(opening ? 780 : 260, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.15);
+    } catch (e) { /* звук не критичен для работы приложения */ }
+  }
+
   const [mapCoords, setMapCoords] = useState(null);
   const [storefrontPhoto, setStorefrontPhoto] = useState(null);
 
@@ -181,6 +234,45 @@ export default function LocalSEOKit() {
 
   const [brandVoiceSuggestions, setBrandVoiceSuggestions] = useState([]);
   const [showBrandVoiceSuggestions, setShowBrandVoiceSuggestions] = useState(false);
+
+  // Сохраняем текстовые поля черновика при каждом изменении
+  useEffect(() => { localStorage.setItem('ls_draft_businessName', businessName); }, [businessName]);
+  useEffect(() => { localStorage.setItem('ls_draft_category', category); }, [category]);
+  useEffect(() => { localStorage.setItem('ls_draft_city', city); }, [city]);
+  useEffect(() => { localStorage.setItem('ls_draft_brandVoice', brandVoice); }, [brandVoice]);
+
+  // Восстанавливаем фото витрины и все сохранённые результаты при загрузке страницы
+  useEffect(() => {
+    try {
+      const savedPost = localStorage.getItem('ls_draft_postResult');
+      if (savedPost) setPostResult(JSON.parse(savedPost));
+      const savedAnswer = localStorage.getItem('ls_draft_answerResult');
+      if (savedAnswer) setAnswerResult(JSON.parse(savedAnswer));
+      const savedSeo = localStorage.getItem('ls_draft_seoResult');
+      if (savedSeo) setSeoResult(JSON.parse(savedSeo));
+      const savedCalendar = localStorage.getItem('ls_draft_calendarResult');
+      if (savedCalendar) setCalendarResult(JSON.parse(savedCalendar));
+      const savedCompetitor = localStorage.getItem('ls_draft_competitorResult');
+      if (savedCompetitor) setCompetitorResult(JSON.parse(savedCompetitor));
+      const savedWeekly = localStorage.getItem('ls_draft_weeklyActions');
+      if (savedWeekly) setWeeklyActions(JSON.parse(savedWeekly));
+    } catch (e) { /* повреждённые данные — просто игнорируем */ }
+    idbGet('storefrontPhoto').then(p => { if (p) setStorefrontPhoto(p); });
+  }, []);
+
+  // Фото витрины — в IndexedDB, там лимит намного больше, чем у localStorage
+  useEffect(() => {
+    idbSet('storefrontPhoto', storefrontPhoto);
+  }, [storefrontPhoto]);
+
+  // Сохраняем результаты всех шести инструментов, чтобы не потерять их
+  // при случайном закрытии вкладки или обновлении страницы
+  useEffect(() => { try { if (postResult) localStorage.setItem('ls_draft_postResult', JSON.stringify(postResult)); } catch (e) {} }, [postResult]);
+  useEffect(() => { try { if (answerResult) localStorage.setItem('ls_draft_answerResult', JSON.stringify(answerResult)); } catch (e) {} }, [answerResult]);
+  useEffect(() => { try { if (seoResult) localStorage.setItem('ls_draft_seoResult', JSON.stringify(seoResult)); } catch (e) {} }, [seoResult]);
+  useEffect(() => { try { if (calendarResult) localStorage.setItem('ls_draft_calendarResult', JSON.stringify(calendarResult)); } catch (e) {} }, [calendarResult]);
+  useEffect(() => { try { if (competitorResult) localStorage.setItem('ls_draft_competitorResult', JSON.stringify(competitorResult)); } catch (e) {} }, [competitorResult]);
+  useEffect(() => { try { if (weeklyActions) localStorage.setItem('ls_draft_weeklyActions', JSON.stringify(weeklyActions)); } catch (e) {} }, [weeklyActions]);
 
   const CATEGORY_OPTIONS_BY_LANG = {
       en: ["Coffee shop", "Restaurant", "Cafe", "Bakery", "Bar", "Pizza restaurant", "Hair salon", "Barbershop", "Nail salon", "Spa", "Massage therapist", "Gym", "Yoga studio", "Dentist", "Doctor", "Pharmacy", "Veterinarian", "Auto repair shop", "Car wash", "Florist", "Pet store", "Bookstore", "Clothing store", "Jewelry store", "Furniture store", "Hardware store", "Law firm", "Accounting firm", "Real estate agency", "Insurance agency", "Photography studio", "Tattoo shop", "Dry cleaner", "Locksmith", "Cleaning service", "Landscaping company", "Plumber", "Electrician", "HVAC company", "Moving company", "Daycare center", "Tutoring center", "Driving school", "Event planner", "Catering service", "Food truck"],
@@ -992,8 +1084,9 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
       
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Cairo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Playfair+Display:wght@500&family=Cairo:wght@400;700&display=swap');
         @keyframes gradientDrift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        @keyframes marqueeScroll { 0% { left: 100%; } 100% { left: -100%; } }
         @keyframes cardRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes floatBlob { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(20px,-16px) scale(1.06); } }
         @keyframes globeSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -1059,6 +1152,18 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
             {t.title}
           </h1>
           <p className="text-sm mt-1" style={{ color: '#D9A6C2' }}>{t.subtitle}</p>
+          <div style={{ overflow: 'hidden', marginTop: 10, whiteSpace: 'nowrap', position: 'relative', height: 26 }}>
+            <div style={{
+              position: 'absolute', animation: 'marqueeScroll 13s linear infinite',
+            }}>
+              <span style={{
+                color: AMBER, fontFamily: "'Playfair Display', serif", fontStyle: 'normal',
+                fontWeight: 500, fontSize: 19, letterSpacing: '0.01em',
+              }}>
+                Your Google profile's personal trainer
+              </span>
+            </div>
+          </div>
           <div className="flex flex-wrap gap-2 mt-3">
             {[t.badgeLanguages, t.badgeTools, t.badgeUnlimited].map((b, i) => {
               const isPink = i === 1;
@@ -1729,6 +1834,9 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
         </div>
 
         <div className="flex flex-col items-center justify-center gap-1 mt-4 pt-6" style={{ borderTop: `1px solid ${LINE}` }}>
+          <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 13, color: AMBER_DEEP, textDecoration: 'underline', marginBottom: 4 }}>
+            Stops guessing. Starts doing.
+          </span>
           <span style={{ fontFamily: monoFont, fontSize: 10, color: INK_SOFT, letterSpacing: '0.04em' }}>
             POWERED BY CLAUDE &middot; PLAINWORK BY KSENIA
           </span>
@@ -1756,6 +1864,38 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           )}
         </div>
       </div>
+
+      {/* Плавающая кнопка "как пользоваться" — в углу экрана */}
+      <button
+        onClick={() => {
+          playPopSound(!showHelpBubble);
+          setShowHelpBubble(v => !v);
+        }}
+        aria-label="How it works"
+        style={{
+          position: 'fixed', bottom: 20, right: 20, width: 48, height: 48, borderRadius: '50%',
+          background: `linear-gradient(90deg, ${AMBER}, #E94F82)`, color: '#14120F', border: 'none',
+          cursor: 'pointer', fontSize: 20, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 14px rgba(242,169,59,0.35)', zIndex: 50,
+        }}
+      >
+        {showHelpBubble ? '\u2715' : '?'}
+      </button>
+
+      {showHelpBubble && (
+        <div
+          style={{
+            position: 'fixed', bottom: 80, right: 20, width: 300, maxWidth: 'calc(100vw - 40px)',
+            background: '#1C1A16', borderRadius: 14, padding: 18, boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+            border: '1px solid rgba(255,255,255,0.1)', zIndex: 50,
+          }}
+        >
+          <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: '#F5F1E8' }}>How Local Signal works</p>
+          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.55, color: '#B5AFA0' }}>
+            Enter your business category, location, and brand voice once. Get this week's 3 priority actions, ready-to-post Google Business Profile content, SEO copy, a full month of posts, and a competitor gap analysis, all built from your actual business.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
