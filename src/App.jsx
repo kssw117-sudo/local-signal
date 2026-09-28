@@ -1154,7 +1154,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           <p className="text-sm mt-1" style={{ color: '#D9A6C2' }}>{t.subtitle}</p>
           <div style={{ overflow: 'hidden', marginTop: 10, whiteSpace: 'nowrap', position: 'relative', height: 26 }}>
             <div style={{
-              position: 'absolute', animation: 'marqueeScroll 13s linear infinite',
+              position: 'absolute', animation: 'marqueeScroll 35s linear infinite',
             }}>
               <span style={{
                 color: AMBER, fontFamily: "'Playfair Display', serif", fontStyle: 'normal',
