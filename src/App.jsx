@@ -1863,6 +1863,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
             </a>
           )}
         </div>
+        <div className="flex items-center justify-center pb-4" style={{ opacity: 0.8 }}>
+          <span style={{ fontFamily: monoFont, fontSize: 9, color: INK_SOFT, textAlign: 'center' }}>
+            Грезина Ксения Викторовна (Ksenia Grezina) &middot; Tax ID (ИНН) 710607167655
+          </span>
+        </div>
       </div>
 
       {/* Плавающая кнопка "как пользоваться" — в углу экрана */}
