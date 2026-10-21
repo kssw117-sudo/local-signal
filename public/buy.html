@@ -63,6 +63,13 @@
   footer { text-align: center; color: #8B96A5; font-size: 12px; margin-top: 60px; }
   .back-link { text-align: center; margin-top: 16px; }
   .back-link a { color: #F2A93B; font-size: 13px; text-decoration: underline; }
+  .refund-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; align-items:center; justify-content:center; padding:24px; }
+  .refund-box { background:#171233; border:1px solid rgba(255,255,255,0.15); border-radius:16px; padding:32px; max-width:440px; width:100%; position:relative; max-height:80vh; overflow-y:auto; backdrop-filter: blur(16px); }
+  .refund-x { position:absolute; top:14px; right:16px; background:none; border:none; font-size:22px; color:#B8B0E8; cursor:pointer; line-height:1; }
+  .refund-eyebrow { font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#F2A93B; margin-bottom:10px; }
+  .refund-h { font-size:20px; margin:0 0 14px; color:#FFFFFF; }
+  .refund-p { font-size:14px; color:#E9E5F5; margin:0 0 12px; line-height:1.6; }
+  .refund-p a { color:#F2A93B; }
 </style>
 </head>
 <body>
@@ -91,7 +98,7 @@
   <p class="sub">Get found on Google Search and Maps -- GBP posts, Q&amp;A replies, SEO copy, and more, all in one place.</p>
 
   <div class="price-box">
-    <div class="price">$119</div>
+    <div class="price">$99</div>
     <div class="price-note">one-time payment &middot; lifetime access &middot; secure card payment</div>
     <div class="widget-wrap">
       <iframe title="lava.top" style="border: none" width="250" height="80" src="https://widget.lava.top/2c0c877a-5546-45dc-ba6d-a8a9779287f4"></iframe>
@@ -130,14 +137,25 @@
   <div style="display:flex;justify-content:center;gap:16px;margin-top:16px;">
     <a href="/terms.html" style="font-size:12px;color:#F2A93B;">Terms</a>
     <a href="/privacy.html" style="font-size:12px;color:#F2A93B;">Privacy</a>
-    <a href="/refund.html" style="font-size:12px;color:#F2A93B;">Refunds</a>
+    <a href="#" onclick="toggleRefund(true);return false;" style="font-size:12px;color:#F2A93B;">Refunds</a>
   </div>
 
   <footer>Plainwork &middot; a tool by Ksenia</footer>
-  <p style="font-size:10.5px;color:#8B96A5;text-align:center;margin-top:10px;opacity:0.8;">
-    Грезина Ксения Викторовна (Ksenia Grezina) &middot; Tax ID (ИНН) 710607167655
-  </p>
 </div>
+
+<div id="refundModal" class="refund-overlay" onclick="if(event.target===this)toggleRefund(false)">
+  <div class="refund-box">
+    <button class="refund-x" onclick="toggleRefund(false)" aria-label="Close">&times;</button>
+    <div class="refund-eyebrow">Refund Policy</div>
+    <h2 class="refund-h">14-Day Money-Back Guarantee</h2>
+    <p class="refund-p">If Local Signal isn't the right fit for you, you can request a full refund within 14 days of your purchase &mdash; no questions asked.</p>
+    <p class="refund-p"><strong>How to request:</strong> Email <a href="mailto:kssw117@gmail.com">kssw117@gmail.com</a> with the email you used to purchase. Refunds are processed within 2 business days, back to your original payment method.</p>
+    <p class="refund-p"><strong>After a refund:</strong> Lifetime access to Local Signal is deactivated.</p>
+  </div>
+</div>
+<script>
+  function toggleRefund(show) { document.getElementById('refundModal').style.display = show ? 'flex' : 'none'; }
+</script>
 
 </body>
 </html>
