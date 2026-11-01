@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Google Business Profile Post Checker (Length &amp; Policy Check) | Local Signal</title>
+  <meta name="description" content="Paste your Google Business Profile post to check the 1,500-character limit and catch things Google often rejects: phone numbers, links in the text, hype claims and all caps. Free, instant, private." />
+  <link rel="canonical" href="https://localsignal.plainwork.website/google-business-post-checker.html" />
+  <meta property="og:title" content="Free Google Business Profile Post Checker" />
+  <meta property="og:description" content="Paste your Google Business Profile post to check the 1,500-character limit and catch things Google often rejects: phone numbers, links in the text, hype claims and all caps. Free, instant, private." />
+  <meta property="og:url" content="https://localsignal.plainwork.website/google-business-post-checker.html" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg: #EEF2F6; --card: #FFFFFF; --field: #F3F6F9; --line: #D7DEE6; --text: #111827; --muted: #55606E; --accent: #F2A93B; --link: #1F7A70; --btn: linear-gradient(90deg, #F2A93B, #D98E1E); --btn-text: #111827; --cta-bg: linear-gradient(135deg, #FFF6E6, #EEF2F6); --cta-line: #F2D7A8; --mark: #FDE7B8; --ok: #2E7D5B; --ok-bg: #E3F2EA; --bad: #B3261E; --bad-bg: #FBE4E2; --warn: #9A6420; --warn-bg: #FBEEDD; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; line-height: 1.55; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 32px 16px 56px; }
+    a { color: var(--link); }
+    h1 { font-family: 'Fraunces', serif; font-weight: 600; font-size: clamp(28px, 6vw, 40px); line-height: 1.15; margin: 8px 0 12px; }
+    h2 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 24px; margin: 40px 0 12px; }
+    h3 { font-size: 16px; margin: 22px 0 8px; }
+    .lead { color: var(--muted); font-size: 17px; margin: 0 0 24px; }
+    .crumb { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+    label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font: inherit; font-size: 16px; color: var(--text); background: var(--field); }
+    textarea { min-height: 150px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 6px; }
+    .stat { background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 14px; color: var(--muted); }
+    .stat b { color: var(--text); font-size: 16px; }
+    .out { margin-top: 18px; display: grid; gap: 10px; }
+    .item { background: var(--field); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+    .item p { margin: 0; white-space: pre-wrap; }
+    .flag { display: flex; gap: 10px; align-items: flex-start; }
+    .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .pill.ok { background: var(--ok-bg); color: var(--ok); }
+    .pill.bad { background: var(--bad-bg); color: var(--bad); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .btn2 { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; margin-top: 12px; }
+    .cta { margin-top: 28px; padding: 22px; border-radius: 16px; background: var(--cta-bg); border: 1px solid var(--cta-line); }
+    .cta h3 { font-family: 'Fraunces', serif; font-size: 21px; margin: 0 0 8px; }
+    .cta p { margin: 0 0 14px; color: var(--muted); }
+    .btn { display: inline-block; background: var(--btn); color: var(--btn-text); text-decoration: none; padding: 11px 18px; border-radius: 10px; font-weight: 600; font-size: 15px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    .guide p, .faq p { color: var(--muted); }
+    .faq p { margin: 4px 0 18px; }
+    .faq b { display: block; color: var(--text); }
+    mark { background: var(--mark); color: inherit; border-radius: 4px; padding: 0 2px; }
+    footer { margin-top: 48px; font-size: 13px; color: var(--muted); text-align: center; }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="crumb" href="https://localsignal.plainwork.website/">← Local Signal</a>
+    <h1>Free Google Business Profile Post Checker</h1>
+    <p class="lead">Paste your Google Business Profile post before you publish it. The checker counts characters against the 1,500 limit and flags things that often get posts rejected or ignored: phone numbers, links in the text, unverifiable claims like “best in town” and shouting in capital letters.</p>
+    <div class="card">
+      <label for="post">Your post</label>
+      <textarea id="post" placeholder="Paste your Google Business Profile post here…"></textarea>
+      <div class="stats">
+        <div class="stat">Characters: <b id="chars">0</b> / 1,500</div>
+        <div class="stat">Words: <b id="words">0</b></div>
+        <div class="stat">Shown before “more”: <b>~100</b></div>
+      </div>
+      <div class="out" id="flags"></div>
+    </div>
+    <div class="cta">
+      <h3>Get posts that are written to pass, every week</h3>
+      <p>Local Signal writes ready-to-post Google Business Profile updates from your real business details, with a built-in compliance check, plus Q&amp;A answers, SEO copy and a competitor gap analysis. It opens with your three priority actions for the week.</p>
+      <a class="btn" href="https://localsignal.plainwork.website/">Plan this week's posts →</a>
+    </div>
+    <h2>What gets Google Business Profile posts rejected</h2>
+    <div class="guide">
+      <table>
+        <thead><tr><th>Problem</th><th>Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td>Phone numbers in the text</td><td>Google often rejects posts with phone numbers in the body. Use the post's “Call now” button instead.</td></tr>
+          <tr><td>Links in the text</td><td>Put your link in the post's action button. Links in the body are a common reason for rejection.</td></tr>
+          <tr><td>Unverifiable claims</td><td>“Best”, “#1”, “cheapest in town” look like spam and can get flagged.</td></tr>
+          <tr><td>ALL CAPS and !!!</td><td>Shouting reads as spam to both Google and customers.</td></tr>
+          <tr><td>Over 1,500 characters</td><td>The hard limit. Only about the first 100 characters show before “more”, so lead with the point.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2>FAQ</h2>
+    <div class="faq">
+      <p><b>How long can a Google Business Profile post be?</b>Up to 1,500 characters. Shorter posts of 150–300 characters usually perform better, and only the first lines show before “more”.</p>
+      <p><b>Why was my Google Business post rejected?</b>Common reasons are phone numbers or links in the text, misleading or unverifiable claims, and spammy formatting like all caps. Fix those and resubmit.</p>
+      <p><b>How often should I post on Google Business Profile?</b>Once a week is a good rhythm. Regular posts show customers and Google that the business is active.</p>
+      <p><b>Is this tool free?</b>Yes, completely free, and nothing you type leaves your browser.</p>
+    </div>
+    <footer>Made by <a href="https://www.plainwork.website/">Plainwork</a> · <a href="https://localsignal.plainwork.website/">Local Signal</a></footer>
+  </main>
+  <script>
+
+    const post = document.getElementById('post');
+    const fmt = n => n.toLocaleString('en-US');
+    const SUPER = /\b(best|#1|number one|no\.? ?1|cheapest|lowest price|top[- ]rated|guaranteed|world[- ]class|unbeatable)\b/gi;
+    function check() {
+      const t = post.value;
+      const chars = [...t].length;
+      document.getElementById('chars').textContent = fmt(chars);
+      document.getElementById('words').textContent = fmt((t.trim().match(/\S+/g) || []).length);
+      const flags = [];
+      if (!t.trim()) { document.getElementById('flags').innerHTML = '<div class="item"><p>Paste a post to check it.</p></div>'; return; }
+      if (chars > 1500) flags.push(['bad', 'Too long', `${fmt(chars - 1500)} characters over the 1,500 limit.`]);
+      const phones = t.match(/(\+?\d[\d\s().-]{7,}\d)/g) || [];
+      if (phones.length) flags.push(['bad', 'Phone number', `Found: ${phones.slice(0,2).join(', ')}. Remove it and use the “Call now” button.`]);
+      const urls = t.match(/(https?:\/\/\S+|www\.\S+|\b[\w-]+\.(com|net|org|io|co|website|shop|store)\b\S*)/gi) || [];
+      if (urls.length) flags.push(['bad', 'Link in text', `Found: ${urls.slice(0,2).join(', ')}. Put the link in the action button instead.`]);
+      const sup = [...new Set((t.match(SUPER) || []).map(s => s.toLowerCase()))];
+      if (sup.length) flags.push(['warn', 'Unverifiable claim', `“${sup.join('”, “')}”. Replace with something specific you can prove.`]);
+      const letters = t.replace(/[^A-Za-z]/g, '');
+      const caps = t.replace(/[^A-Z]/g, '');
+      const capsWords = (t.match(/\b[A-Z]{4,}\b/g) || []).length;
+      if ((letters.length > 20 && caps.length / letters.length > 0.4) || capsWords >= 3) flags.push(['warn', 'Too many capitals', 'Lots of CAPS reads as shouting. Use normal sentence case.']);
+      if ((t.match(/!/g) || []).length >= 4) flags.push(['warn', 'Too many “!”', 'Several exclamation marks look spammy. One is enough.']);
+      if (chars > 0 && chars < 80) flags.push(['warn', 'Very short', 'Add a detail customers care about: what, when, why it matters.']);
+      const html = flags.length
+        ? flags.map(([cls, label, msg]) => `<div class="item flag"><span class="pill ${cls}">${label}</span><p>${msg.replace(/</g,'&lt;')}</p></div>`).join('')
+        : '<div class="item flag"><span class="pill ok">Looks good</span><p>No common problems found. Ready to post.</p></div>';
+      document.getElementById('flags').innerHTML = html;
+    }
+    post.addEventListener('input', check);
+    check();
+
+  </script>
+</body>
+</html>
