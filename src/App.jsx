@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Ответ сервера о пробной попытке или дневном лимите (считаются на сервере).
+function guardError(data) {
+  if (data && (data.code === 'trial_used' || data.code === 'limit_reached')) {
+    const e = new Error(data.error || data.code);
+    e.guardMessage = data.error;
+    e.guardCode = data.code;
+    return e;
+  }
+  return null;
+}
+
+
 // Маленький помощник для IndexedDB — используем для фото витрины,
 // т.к. оно в base64 легко превышает лимит localStorage
 function idbOpen() {
@@ -577,7 +589,15 @@ export default function LocalSEOKit() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ licenseCode, prompt, trial: isTrial }),
     });
-    if (response.status === 403) {
+    if (response.status === 403 || response.status === 429) {
+      const ge = guardError(await response.json().catch(() => ({})));
+      if (ge) {
+        if (ge.guardCode === 'trial_used') {
+          localStorage.setItem('ls_free_trial_used', 'true');
+          setFreeTrialUsed(true);
+        }
+        throw ge;
+      }
       throw new Error('license');
     }
     if (isTrial) {
@@ -628,7 +648,7 @@ Google Business Profile posts should not contain phone numbers, URLs (other than
         localStorage.removeItem('seo_unlocked');
         setLicenseError(t.licenseInvalid);
       } else {
-        setError(t.genError);
+        setError(err.guardMessage || t.genError);
       }
     } finally {
       setPostLoading(false);
@@ -666,7 +686,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"answer": "the answe
         localStorage.removeItem('seo_unlocked');
         setLicenseError(t.licenseInvalid);
       } else {
-        setError(t.genError);
+        setError(err.guardMessage || t.genError);
       }
     } finally {
       setAnswerLoading(false);
@@ -711,7 +731,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"short": "~150 chara
         localStorage.removeItem('seo_unlocked');
         setLicenseError(t.licenseInvalid);
       } else {
-        setError(t.genError);
+        setError(err.guardMessage || t.genError);
       }
     } finally {
       setSeoLoading(false);
@@ -755,7 +775,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"weeks": [{"label": 
         localStorage.removeItem('seo_unlocked');
         setLicenseError(t.licenseInvalid);
       } else {
-        setError(t.genError);
+        setError(err.guardMessage || t.genError);
       }
     } finally {
       setCalendarLoading(false);
@@ -794,7 +814,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"gaps": ["short spec
         localStorage.removeItem('seo_unlocked');
         setLicenseError(t.licenseInvalid);
       } else {
-        setError(t.genError);
+        setError(err.guardMessage || t.genError);
       }
     } finally {
       setCompetitorLoading(false);
@@ -833,7 +853,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
         localStorage.removeItem('seo_unlocked');
         setLicenseError(t.licenseInvalid);
       } else {
-        setError(t.genError);
+        setError(err.guardMessage || t.genError);
       }
     } finally {
       setWeeklyActionsLoading(false);
