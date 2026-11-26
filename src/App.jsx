@@ -1126,6 +1126,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
         .ls-btn:active { transform: translateY(0) scale(0.98); }
       `}</style>
 
+      <div className="ls-v3-float" aria-hidden="true"><span className="ls-v3-float-pin ls-v3-float-pin--one"></span><span className="ls-v3-float-pin ls-v3-float-pin--two"></span><span className="ls-v3-float-pin ls-v3-float-pin--three"></span></div>
       <AboutModal />
       <HowToModal />
       <div className="w-full ls-card">
@@ -1582,6 +1583,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
             ))}
           </div>
 
+          <div className="ls-v3-tool-art" aria-hidden="true">
+            <img key={activeTab} src={`/images/ls-tool-${activeTab}.webp`} alt="" width="320" height="320" decoding="async" />
+          </div>
+
           {activeTab === 'post' && (
             <div className="space-y-3">
               <div>
@@ -1822,6 +1827,8 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           )}
           </div>
         </div>
+
+        <figure className="ls-v3-city" aria-hidden="true"><img src="/images/ls-city.webp" alt="" width="1200" height="675" loading="lazy" decoding="async" /><span className="ls-v3-city-signal ls-v3-city-signal--one"></span><span className="ls-v3-city-signal ls-v3-city-signal--two"></span><span className="ls-v3-city-signal ls-v3-city-signal--three"></span><span className="ls-v3-city-signal ls-v3-city-signal--four"></span></figure>
 
         <div className="flex justify-center pt-6">
           <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
