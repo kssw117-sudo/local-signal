@@ -60,7 +60,7 @@ const RadarHero = () => {
     { top: '75%', left: '92%', delay: '1.9s', size: 5 },
   ];
   return (
-    <div style={{ position: 'relative', width: '100%', height: 270, overflow: 'hidden' }}>
+    <div className="ls-visual-radar" aria-hidden="true" style={{ position: 'relative', width: '100%', height: 270, overflow: 'hidden' }}>
       <style>{`
         @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes blipPulse {
@@ -1129,7 +1129,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
       <AboutModal />
       <HowToModal />
       <div className="w-full ls-card">
-        <div style={{ padding: '40px 24px 0', background: `linear-gradient(160deg, #1D1424 0%, #14131F 55%, #1A1220 100%)`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+        <div className="ls-visual-header" style={{ padding: '40px 24px 0', background: `linear-gradient(160deg, #1D1424 0%, #14131F 55%, #1A1220 100%)`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
           <div style={{ position: 'absolute', top: -60, right: -40, width: 220, height: 220, borderRadius: '50%', background: `radial-gradient(circle, rgba(233,79,130,0.28), transparent 70%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -70, left: -50, width: 200, height: 200, borderRadius: '50%', background: `radial-gradient(circle, rgba(242,169,59,0.3), transparent 70%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: '35%', left: -30, width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle, rgba(233,79,130,0.20), transparent 70%)`, pointerEvents: 'none' }} />
