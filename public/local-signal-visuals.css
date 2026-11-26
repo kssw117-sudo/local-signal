@@ -99,3 +99,118 @@
   .ls-visual-radar::after,.ls-visual-radar *,.ls-visual-header > div[style*="white-space"] > div[style*="marqueeScroll"] {animation:none !important}
   .ls-visual-radar > div:not(:first-of-type):not(:last-of-type) > div:first-child {opacity:.55}
 }
+
+/* V3 — compact tool illustrations, decorative floating pins, city panorama.
+   V2 header, working controls, forms and text are untouched. */
+.ls-v3-tool-art {
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:min(100%, 390px);
+  margin:2px auto 14px;
+  pointer-events:none;
+  user-select:none;
+}
+.ls-v3-tool-art::before,.ls-v3-tool-art::after {
+  content:"";
+  height:1px;
+  flex:1;
+  background:linear-gradient(90deg,transparent,rgba(217,142,30,.28));
+}
+.ls-v3-tool-art::after {transform:scaleX(-1)}
+.ls-v3-tool-art img {
+  display:block;
+  width:112px;
+  height:112px;
+  margin:0 12px;
+  flex:none;
+  object-fit:contain;
+  border-radius:17px;
+  border:1px solid rgba(242,169,59,.21);
+  box-shadow:0 5px 16px rgba(20,19,31,.13);
+  animation:lsV3ArtIn .3s ease-out both;
+}
+@keyframes lsV3ArtIn {from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.ls-v3-float {
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  user-select:none;
+  z-index:2;
+}
+.ls-v3-float-pin {
+  position:absolute;
+  display:block;
+  width:22px;
+  height:32px;
+  color:#D98E1E;
+  opacity:.75;
+  animation:lsV3Float 7.5s ease-in-out infinite;
+}
+.ls-v3-float-pin::before {
+  content:"";
+  position:absolute;
+  top:3px;
+  left:2px;
+  width:18px;
+  height:18px;
+  border:1.5px solid currentColor;
+  border-radius:50% 50% 50% 3px;
+  transform:rotate(-45deg);
+  box-shadow:0 0 7px rgba(242,169,59,.18);
+}
+.ls-v3-float-pin::after {
+  content:"";
+  position:absolute;
+  top:8px;
+  left:7px;
+  width:8px;
+  height:8px;
+  border:1.4px solid currentColor;
+  border-radius:50%;
+  box-sizing:border-box;
+}
+.ls-v3-float-pin--one {left:0;top:31%;animation-delay:-1s}
+.ls-v3-float-pin--two {right:0;top:53%;color:#E94F82;animation-duration:9s;animation-delay:-4s}
+.ls-v3-float-pin--three {left:0;top:78%;color:#2FA89A;animation-duration:8.5s;animation-delay:-2.5s}
+@keyframes lsV3Float {0%,100%{transform:translateY(0);opacity:.52}50%{transform:translateY(-13px);opacity:.86}}
+.ls-v3-city {
+  position:relative;
+  width:min(100%, 680px);
+  margin:36px auto 0;
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid rgba(242,169,59,.25);
+  border-radius:20px;
+  background:#14131F;
+  box-shadow:0 14px 36px rgba(20,19,31,.13);
+  pointer-events:none;
+  user-select:none;
+}
+.ls-v3-city img {display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}
+.ls-v3-city-signal {
+  position:absolute;
+  width:8px;
+  height:8px;
+  border:1px solid #FFD58B;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  animation:lsV3CityPulse 4.5s ease-out infinite;
+}
+.ls-v3-city-signal--one {left:24.5%;top:58.5%;animation-delay:-.4s}
+.ls-v3-city-signal--two {left:46.4%;top:44.4%;animation-delay:-1.7s}
+.ls-v3-city-signal--three {left:49%;top:69.5%;animation-delay:-2.8s}
+.ls-v3-city-signal--four {left:73.3%;top:45.7%;animation-delay:-3.8s}
+@keyframes lsV3CityPulse {0%{transform:translate(-50%,-50%) scale(.6);opacity:.8}75%,100%{transform:translate(-50%,-50%) scale(3.2);opacity:0}}
+@media(max-width:600px){
+  .ls-v3-tool-art {margin:0 auto 10px}
+  .ls-v3-tool-art img {width:86px;height:86px;border-radius:13px;margin:0 9px}
+  .ls-v3-float-pin {scale:.78}
+  .ls-v3-city {margin-top:24px;border-radius:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ls-v3-tool-art img,.ls-v3-float-pin,.ls-v3-city-signal{animation:none}
+  .ls-v3-city-signal{opacity:.35}
+}
