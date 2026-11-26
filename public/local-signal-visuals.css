@@ -1,0 +1,101 @@
+/* Local Signal visual V2. Scoped exclusively to decorative hero layers. */
+.ls-visual-header {
+  isolation: isolate;
+}
+.ls-visual-header > .ls-visual-radar {
+  height: clamp(245px, 30vw, 370px) !important;
+  width: 100% !important;
+  max-width: 1440px;
+  margin: 22px auto 0;
+  border: 1px solid rgba(242,169,59,.19);
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  background: #171522 url('/images/local-signal-map.svg') center center / cover no-repeat;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 -12px 64px rgba(0,0,0,.13);
+  isolation: isolate;
+  pointer-events: none;
+  user-select: none;
+}
+.ls-visual-radar > div:first-of-type {
+  opacity: .16;
+  background-image: radial-gradient(rgba(242,169,59,.36) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
+}
+.ls-visual-radar > div:not(:first-of-type):not(:last-of-type) {
+  width: 10px !important;
+  height: 10px !important;
+  z-index: 3;
+}
+.ls-visual-radar > div:not(:first-of-type):not(:last-of-type) > div:first-child {
+  border-color: #F2A93B !important;
+  animation-name: lsVisualSignalPulse !important;
+  animation-duration: 3.8s !important;
+}
+.ls-visual-radar > div:not(:first-of-type):not(:last-of-type) > div:last-child {
+  inset: 3px !important;
+  width: 4px !important;
+  height: 4px !important;
+  background: #F2A93B !important;
+  box-shadow: 0 0 9px 2px rgba(242,169,59,.6);
+  animation-duration: 3.8s !important;
+}
+.ls-visual-radar > div:nth-of-type(3n):not(:last-of-type) > div:first-child {border-color:#E94F82 !important}
+.ls-visual-radar > div:nth-of-type(3n):not(:last-of-type) > div:last-child {background:#E94F82 !important;box-shadow:0 0 9px 2px rgba(233,79,130,.65)}
+.ls-visual-radar > div:last-of-type {
+  width: clamp(230px, 30vw, 350px) !important;
+  height: clamp(230px, 30vw, 350px) !important;
+  z-index: 2;
+}
+.ls-visual-radar > div:last-of-type > div:nth-child(1) {width:35% !important;height:35% !important;border-color:rgba(242,169,59,.58) !important}
+.ls-visual-radar > div:last-of-type > div:nth-child(2) {width:65% !important;height:65% !important;border-color:rgba(242,169,59,.35) !important}
+.ls-visual-radar > div:last-of-type > div:nth-child(3) {width:94% !important;height:94% !important;border-color:rgba(242,169,59,.2) !important}
+.ls-visual-radar > div:last-of-type > div:nth-child(4) {
+  background:conic-gradient(from 0deg,rgba(242,169,59,.28),rgba(242,169,59,.03) 24%,transparent 34%) !important;
+  animation-duration: 9s !important;
+}
+.ls-visual-radar > div:last-of-type > div:last-child {
+  width:12px !important;height:12px !important;
+  box-shadow:0 0 0 7px rgba(242,169,59,.13),0 0 23px rgba(242,169,59,.8) !important;
+}
+.ls-visual-radar::after {
+  content:"";
+  position:absolute;
+  z-index:4;
+  top:50%;
+  left:54%;
+  width:42px;
+  height:50px;
+  transform:translate(-50%,-99%);
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 50'%3E%3Cdefs%3E%3ClinearGradient id='g' x2='1' y2='1'%3E%3Cstop stop-color='%23FFD080'/%3E%3Cstop offset='1' stop-color='%23F2A93B'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M21 2C10.5 2 3 10 3 20c0 12 18 28 18 28s18-16 18-28C39 10 31.5 2 21 2Z' fill='url(%23g)' stroke='%23FFE7B7' stroke-width='1.3'/%3E%3Cpath d='M11 19h20v11H11zM10 19l3-7h16l3 7M17 30v-7h8v7' stroke='%23221A24' stroke-width='1.7' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter:drop-shadow(0 5px 13px rgba(242,169,59,.35));
+  animation: lsVisualPin 5s ease-in-out infinite;
+}
+@keyframes lsVisualSignalPulse {
+  0% {transform:scale(.7);opacity:.85}
+  65%,100% {transform:scale(3.1);opacity:0}
+}
+@keyframes lsVisualPin {
+  0%,100% {transform:translate(-50%,-99%)}
+  50% {transform:translate(-50%,-108%)}
+}
+/* Retain the existing tagline and its motion, but keep the message readable. */
+.ls-visual-header > div[style*="white-space"] > div[style*="marqueeScroll"] {
+  position:relative !important;
+  left:auto !important;
+  animation: lsVisualTagline 7s ease-in-out infinite !important;
+}
+@keyframes lsVisualTagline {0%,100%{opacity:1}50%{opacity:.76}}
+@media(max-width:600px){
+  .ls-visual-header > .ls-visual-radar {
+    height:245px !important;
+    margin-top:16px;
+    border-radius:15px 15px 0 0;
+  }
+  .ls-visual-radar > div:last-of-type {width:230px !important;height:230px !important}
+  .ls-visual-radar::after {width:35px;height:42px}
+  .ls-visual-header > div[style*="white-space"] {height:auto !important;min-height:26px;white-space:normal !important}
+}
+@media(prefers-reduced-motion:reduce){
+  .ls-visual-radar::after,.ls-visual-radar *,.ls-visual-header > div[style*="white-space"] > div[style*="marqueeScroll"] {animation:none !important}
+  .ls-visual-radar > div:not(:first-of-type):not(:last-of-type) > div:first-child {opacity:.55}
+}
