@@ -297,3 +297,60 @@
 .ls-v6-picker button[aria-pressed=true]{color:#ffe0a6;border-color:#F2A93B80;background:#473023}.ls-v6-picker button[aria-pressed=true] i{background:#F2A93B;box-shadow:0 0 6px #F2A93B}
 @media(max-width:1150px){.ls-v6-intro{position:relative;top:auto;left:auto;max-width:none;padding:22px 24px 0}.ls-v6-intro h2{font-size:27px}.ls-v6-band .ls-live-scene{margin-top:-6px}.ls-v6-insight{position:relative;top:auto;right:auto;width:auto;margin:-6px 24px 12px;padding:15px}.ls-v6-picker{position:relative;bottom:auto;left:auto;transform:none;max-width:none;padding:0 20px 20px}.ls-v6-node-label{display:none}.ls-v6-band .ls-live-image{mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 90%,transparent);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 12%,#000 90%,transparent)}.ls-v6-node{width:44px!important;height:44px!important}.ls-v6-extra-pin{width:15px;height:19px}}
 @media(prefers-reduced-motion:reduce){.ls-v6-open{transition:none}}
+
+/* V8 purchase link — approved V7 styling retained. */
+.ls-v7-access{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px;max-width:100%;width:fit-content}
+.ls-v7-price{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.ls-v7-price-amount{font:700 26px/1 'Space Grotesk',Inter,sans-serif;letter-spacing:-.04em;color:#F2A93B;font-variant-numeric:tabular-nums}
+.ls-v7-price-meta{font:10.5px/1.45 Inter,sans-serif;color:#C7B5C9;white-space:normal;max-width:113px}
+.ls-v7-price-meta span{color:#E94F82}
+.ls-v7-buy{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:10px 13px;border:1px solid rgba(242,169,59,.46);border-radius:8px;background:linear-gradient(135deg,#F2A93B,#D98E1E);color:#17131f;font:600 11px/1.25 Inter,sans-serif;text-decoration:none;box-shadow:0 4px 18px rgba(242,169,59,.15);transition:box-shadow .2s,transform .2s;white-space:nowrap}
+.ls-v7-buy span{font-size:15px;line-height:1}
+.ls-v7-buy:hover{transform:translateY(-2px);box-shadow:0 4px 25px rgba(242,169,59,.32)}
+.ls-v7-buy:focus-visible{outline:2px solid #fff4d5;outline-offset:3px}
+
+
+/* V8 — editorial local search scene; no repeated toolkit or simulated analytics. */
+.ls-v8-discovery{position:relative;isolation:isolate;width:100%;max-width:660px;min-width:0;height:220px;justify-self:end;display:flex;align-items:center;justify-content:center;overflow:hidden;user-select:none;pointer-events:none}
+.ls-v8-halo{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 48%,rgba(233,79,130,.09),transparent 62%),radial-gradient(ellipse at 28% 65%,rgba(242,169,59,.10),transparent 59%);filter:blur(8px);animation:lsV8Glow 8s ease-in-out infinite}
+.ls-v8-stream{position:absolute;inset:0;width:100%;height:100%;opacity:.8;z-index:-1}
+.ls-v8-trace{animation:lsV8Trace 6s linear infinite}
+.ls-v8-content{position:relative;width:min(94%,440px);padding:10px 12px 9px}
+.ls-v8-eyebrow{font:500 9px/1.5 'IBM Plex Mono',monospace;letter-spacing:.18em;color:#BDA9C1;display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.ls-v8-eyebrow i{width:5px;height:5px;border-radius:50%;background:#F2A93B;box-shadow:0 0 10px #F2A93B;animation:lsV8Glow 4s ease-in-out infinite}
+.ls-v8-headline{font:500 clamp(31px,3.2vw,49px)/1.07 'Space Grotesk',Inter,sans-serif;letter-spacing:-.05em;color:#F1E5EA;margin-bottom:14px}
+.ls-v8-headline em{font-style:normal;background:linear-gradient(100deg,#FFD18B,#F2A93B 45%,#E94F82);background-clip:text;-webkit-background-clip:text;color:transparent}
+.ls-v8-query{display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;height:40px;padding:0 14px;border:1px solid #f2a93b55;border-radius:100px;background:linear-gradient(100deg,#2c2534cf,#221e2bd9);box-shadow:0 5px 25px #07060e50, inset 0 1px 0 #ffffff0b;white-space:nowrap;font:500 12px/1.3 Inter,sans-serif;color:#EADDE7}
+.ls-v8-query svg{flex:none;color:#F2A93B}.ls-v8-changing{position:relative;display:grid;min-width:85px;height:19px;align-items:center}.ls-v8-changing>span{grid-area:1/1;opacity:0;animation:lsV8Query 12s infinite}.ls-v8-changing>span:nth-child(2){animation-delay:4s}.ls-v8-changing>span:nth-child(3){animation-delay:8s}.ls-v8-near{color:#F2A93B;font-weight:600}.ls-v8-cursor{width:1px;height:15px;background:#F2A93B;animation:lsV8Blink 1.2s steps(2) infinite}.ls-v8-caption{color:#BDA9C1;font:9px/1.5 'IBM Plex Mono',monospace;letter-spacing:.02em;margin-top:8px}
+@keyframes lsV8Query{0%,30%{opacity:1;transform:translateY(0)}33%,100%{opacity:0;transform:translateY(-3px)}}@keyframes lsV8Glow{0%,100%{opacity:.55}50%{opacity:1}}@keyframes lsV8Trace{from{stroke-dashoffset:950}to{stroke-dashoffset:0}}@keyframes lsV8Blink{50%{opacity:0}}
+@media(max-width:900px){.ls-v8-discovery{height:190px;justify-self:center;max-width:660px}.ls-v8-content{width:min(94%,440px)}.ls-v8-headline{font-size:37px}}
+@media(max-width:540px){.ls-v8-discovery{height:171px;justify-content:flex-start}.ls-v8-content{width:100%;padding:5px 8px}.ls-v8-eyebrow{font-size:8px;letter-spacing:.12em;margin-bottom:7px}.ls-v8-headline{font-size:32px;margin-bottom:11px}.ls-v8-query{height:35px;font-size:11px;gap:8px;padding:0 11px}.ls-v8-caption{margin-top:5px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){.ls-v8-discovery *{animation:none!important}.ls-v8-changing>span:first-child{opacity:1}.ls-v8-changing>span:not(:first-child){opacity:0}}
+
+
+/* V8: layout of the existing header. No changes to the App's React state or handlers. */
+.ls-v8-addon{display:contents}
+.ls-visual-header:has(> .ls-v8-addon){
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+  grid-template-rows:auto auto auto auto auto auto auto;
+  column-gap:clamp(16px,3vw,48px);align-items:start;
+}
+.ls-visual-header > .flex.items-center.justify-between.relative{grid-column:1/-1;grid-row:1;z-index:2;min-width:0}
+.ls-visual-header > h1{grid-column:1;grid-row:2;position:relative;min-width:0;margin-top:19px}
+.ls-visual-header > p{grid-column:1;grid-row:3;position:relative;min-width:0}
+.ls-visual-header > div[style*="white-space"]{grid-column:1;grid-row:4;min-width:0;white-space:normal!important;height:auto!important;min-height:26px}
+.ls-visual-header > .flex.flex-wrap.gap-2.mt-3{grid-column:1;grid-row:5;position:relative;min-width:0}
+.ls-visual-header > .ls-v8-addon > .ls-v7-access{grid-column:1;grid-row:6;align-self:start;position:relative;z-index:2;margin-bottom:3px}
+.ls-visual-header > .ls-v8-addon > .ls-v8-discovery{grid-column:2;grid-row:2/7;align-self:center;margin-top:10px;z-index:1}
+.ls-visual-header > .ls-visual-radar{grid-column:1/-1;grid-row:7;min-width:0}
+@media(max-width:900px){
+  .ls-visual-header:has(> .ls-v8-addon){grid-template-columns:minmax(0,1fr);grid-template-rows:repeat(8,auto);column-gap:0}
+  .ls-visual-header > h1{margin-top:14px}
+  .ls-visual-header > .ls-v8-addon > .ls-v8-discovery{grid-column:1;grid-row:7;margin-top:20px}
+  .ls-visual-header > .ls-visual-radar{grid-row:8}
+}
+@media(max-width:540px){
+  .ls-visual-header > .ls-v8-addon > .ls-v8-discovery{margin-top:16px}
+  .ls-v7-access{gap:12px;margin-top:15px}.ls-v7-price-amount{font-size:23px}.ls-v7-price-meta{font-size:10px;max-width:100px}.ls-v7-buy{padding:10px;font-size:10px;gap:7px}
+}
+@media(prefers-reduced-motion:reduce){.ls-v7-buy{transition:none}.ls-visual-header > div[style*="white-space"] > div[style*="marqueeScroll"]{animation:none!important}}
