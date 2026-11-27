@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import LocalSignalCity from './LocalSignalCity.jsx';
 
 // Ответ сервера о пробной попытке или дневном лимите (считаются на сервере).
 function guardError(data) {
@@ -1203,7 +1204,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           <RadarHero />
         </div>
 
-        <div style={{ padding: '32px 24px 64px', minHeight: '60vh', background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', overflow: 'hidden', position: 'relative', boxSizing: 'border-box' }}>
+        <div className="ls-v4-workspace" style={{ padding: '32px 24px 64px', minHeight: '60vh', background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', overflow: 'hidden', position: 'relative', boxSizing: 'border-box' }}>
           <div style={{
             position: 'absolute', inset: 0,
             background: `linear-gradient(120deg, rgba(242,169,59,0.05), rgba(233,79,130,0.11), rgba(233,79,130,0.06), rgba(242,169,59,0.05))`,
@@ -1564,10 +1565,12 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
             )}
           </div>
 
-          <div className="flex mb-4 overflow-x-auto" style={{ borderBottom: `1px solid ${LINE}` }}>
+          <div id="ls-tool-tabs" className="flex mb-4 overflow-x-auto ls-v4-tabs" style={{ borderBottom: `1px solid ${LINE}` }}>
             {tabs.map(tab => (
               <button
                 key={tab.id}
+                data-ls-tool={tab.id}
+                aria-selected={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className="flex-1 text-center py-2.5 whitespace-nowrap px-1"
                 style={{
@@ -1578,13 +1581,10 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
                   marginBottom: -1,
                 }}
               >
+                <img className="ls-v4-tab-image" src={`/images/ls-tool-${tab.id}.webp`} alt="" aria-hidden="true" width="72" height="72" />
                 {tab.label}
               </button>
             ))}
-          </div>
-
-          <div className="ls-v3-tool-art" aria-hidden="true">
-            <img key={activeTab} src={`/images/ls-tool-${activeTab}.webp`} alt="" width="320" height="320" decoding="async" />
           </div>
 
           {activeTab === 'post' && (
@@ -1828,7 +1828,16 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           </div>
         </div>
 
-        <figure className="ls-v3-city" aria-hidden="true"><img src="/images/ls-city.webp" alt="" width="1200" height="675" loading="lazy" decoding="async" /><span className="ls-v3-city-signal ls-v3-city-signal--one"></span><span className="ls-v3-city-signal ls-v3-city-signal--two"></span><span className="ls-v3-city-signal ls-v3-city-signal--three"></span><span className="ls-v3-city-signal ls-v3-city-signal--four"></span></figure>
+        <LocalSignalCity onOpenTool={(tool) => {
+          setActiveTab(tool);
+          requestAnimationFrame(() => {
+            const target = document.querySelector('#ls-tool-tabs [data-ls-tool="' + tool + '"]');
+            if (target) {
+              target.focus({ preventScroll: true });
+              target.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+            }
+          });
+        }} />
 
         <div className="flex justify-center pt-6">
           <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
