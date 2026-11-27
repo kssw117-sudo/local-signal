@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import LocalSignalCity from './LocalSignalCity.jsx';
 
 // Ответ сервера о пробной попытке или дневном лимите (считаются на сервере).
 function guardError(data) {
@@ -60,7 +61,7 @@ const RadarHero = () => {
     { top: '75%', left: '92%', delay: '1.9s', size: 5 },
   ];
   return (
-    <div style={{ position: 'relative', width: '100%', height: 270, overflow: 'hidden' }}>
+    <div className="ls-visual-radar" aria-hidden="true" style={{ position: 'relative', width: '100%', height: 270, overflow: 'hidden' }}>
       <style>{`
         @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes blipPulse {
@@ -1126,10 +1127,11 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
         .ls-btn:active { transform: translateY(0) scale(0.98); }
       `}</style>
 
+      <div className="ls-v3-float" aria-hidden="true"><span className="ls-v3-float-pin ls-v3-float-pin--one"></span><span className="ls-v3-float-pin ls-v3-float-pin--two"></span><span className="ls-v3-float-pin ls-v3-float-pin--three"></span></div>
       <AboutModal />
       <HowToModal />
       <div className="w-full ls-card">
-        <div style={{ padding: '40px 24px 0', background: `linear-gradient(160deg, #1D1424 0%, #14131F 55%, #1A1220 100%)`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
+        <div className="ls-visual-header" style={{ padding: '40px 24px 0', background: `linear-gradient(160deg, #1D1424 0%, #14131F 55%, #1A1220 100%)`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box' }}>
           <div style={{ position: 'absolute', top: -60, right: -40, width: 220, height: 220, borderRadius: '50%', background: `radial-gradient(circle, rgba(233,79,130,0.28), transparent 70%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -70, left: -50, width: 200, height: 200, borderRadius: '50%', background: `radial-gradient(circle, rgba(242,169,59,0.3), transparent 70%)`, pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: '35%', left: -30, width: 160, height: 160, borderRadius: '50%', background: `radial-gradient(circle, rgba(233,79,130,0.20), transparent 70%)`, pointerEvents: 'none' }} />
@@ -1202,7 +1204,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           <RadarHero />
         </div>
 
-        <div style={{ padding: '32px 24px 64px', minHeight: '60vh', background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', overflow: 'hidden', position: 'relative', boxSizing: 'border-box' }}>
+        <div className="ls-v4-workspace" style={{ padding: '32px 24px 64px', minHeight: '60vh', background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', overflow: 'hidden', position: 'relative', boxSizing: 'border-box' }}>
           <div style={{
             position: 'absolute', inset: 0,
             background: `linear-gradient(120deg, rgba(242,169,59,0.05), rgba(233,79,130,0.11), rgba(233,79,130,0.06), rgba(242,169,59,0.05))`,
@@ -1563,10 +1565,12 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
             )}
           </div>
 
-          <div className="flex mb-4 overflow-x-auto" style={{ borderBottom: `1px solid ${LINE}` }}>
+          <div id="ls-tool-tabs" className="flex mb-4 overflow-x-auto ls-v4-tabs" style={{ borderBottom: `1px solid ${LINE}` }}>
             {tabs.map(tab => (
               <button
                 key={tab.id}
+                data-ls-tool={tab.id}
+                aria-selected={activeTab === tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className="flex-1 text-center py-2.5 whitespace-nowrap px-1"
                 style={{
@@ -1577,6 +1581,7 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
                   marginBottom: -1,
                 }}
               >
+                <img className="ls-v4-tab-image" src={`/images/ls-tool-${tab.id}.webp`} alt="" aria-hidden="true" width="72" height="72" />
                 {tab.label}
               </button>
             ))}
@@ -1822,6 +1827,17 @@ Respond ONLY with valid JSON, no markdown, no code fences: {"actions": ["specifi
           )}
           </div>
         </div>
+
+        <LocalSignalCity onOpenTool={(tool) => {
+          setActiveTab(tool);
+          requestAnimationFrame(() => {
+            const target = document.querySelector('#ls-tool-tabs [data-ls-tool="' + tool + '"]');
+            if (target) {
+              target.focus({ preventScroll: true });
+              target.scrollIntoView({ block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+            }
+          });
+        }} />
 
         <div className="flex justify-center pt-6">
           <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
